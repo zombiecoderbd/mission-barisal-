@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Barisal v3 — ডকুমেন্টেশন ও ব্যবহারবিধি</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #21262d;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text2: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --orange: #d29922;
+            --red: #f85149;
+            --purple: #bc8cff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 0;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #0d1117 0%, #1c2333 50%, #0d1117 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(88, 166, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(188, 140, 255, 0.05) 0%, transparent 50%);
+            animation: glow 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(-5%, -5%);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .hero .tagline {
+            font-size: 1.2em;
+            color: var(--text2);
+            margin-bottom: 20px;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 4px;
+        }
+
+        .badge-node {
+            background: #2b5e2b;
+            color: #7ee787;
+        }
+
+        .badge-zero {
+            background: #1c3a5c;
+            color: #58a6ff;
+        }
+
+        .badge-multi {
+            background: #3c1c5c;
+            color: #bc8cff;
+        }
+
+        /* Nav */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 0;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 8px;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+
+        .nav a {
+            color: var(--text2);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        /* Main */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 25px 0 12px;
+            color: var(--text);
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text2);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(88, 166, 255, 0.1);
+        }
+
+        .card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .card h4 {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 0.95em;
+            margin-bottom: 0;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        :not(pre)>code {
+            background: var(--surface2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+
+        th,
+        td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--surface);
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tr:hover td {
+            background: var(--surface);
+        }
+
+        /* Flow diagram */
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding: 20px;
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            background: var(--surface2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .flow-arrow {
+            color: var(--text2);
+            font-size: 1.2em;
+        }
+
+        .flow-step.active {
+            border-color: var(--accent);
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 16px 20px;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid var(--bg);
+        }
+
+        .timeline-item .time {
+            font-size: 0.85em;
+            color: var(--text2);
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        .alert-warn {
+            background: rgba(210, 153, 34, 0.1);
+            border-color: var(--orange);
+        }
+
+        .alert-err {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: var(--red);
+        }
+
+        .alert-succ {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: var(--green);
+        }
+
+        /* Agent badges */
+        .agent-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .agent-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .agent-badge .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-red {
+            background: #f85149;
+        }
+
+        .dot-blue {
+            background: #58a6ff;
+        }
+
+        .dot-green {
+            background: #3fb950;
+        }
+
+        .dot-yellow {
+            background: #d29922;
+        }
+
+        .dot-purple {
+            background: #bc8cff;
+        }
+
+        .dot-black {
+            background: #666;
+        }
+
+        /* Endpoints */
+        .endpoint {
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 8px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            font-family: monospace;
+        }
+
+        .method {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .method-get {
+            background: #1c3a5c;
+            color: #58a6ff;
+        }
+
+        .method-post {
+            background: #2b5e2b;
+            color: #7ee787;
+        }
+
+        .method-ws {
+            background: #3c1c5c;
+            color: #bc8cff;
+        }
+
+        .path {
+            color: var(--text);
+            flex: 1;
+        }
+
+        .desc {
+            color: var(--text2);
+            font-size: 0.9em;
+            width: 100%;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text2);
+            font-size: 0.9em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>🧟 Mission Barisal v3</h1>
+            <p class="tagline">"যেখানে কোড ও কথা বলে, সমস্যাগুলো নিজের কাঁধে তোলে"</p>
+            <div>
+                <span class="badge badge-node">⚡ Pure Node.js</span>
+                <span class="badge badge-zero">🔄 Zero Dependency</span>
+                <span class="badge badge-multi">🤖 6 Agents · 3 Providers · 14 Models</span>
+            </div>
+            <p style="margin-top:12px; color: var(--text2); font-size: 0.9em;">
+                Owner: Sahon Srabon · Developer Zone · Dhaka, Bangladesh
+            </p>
+        </div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-inner">
+            <a href="#overview">সারসংক্ষেপ</a>
+            <a href="#agents">এজেন্ট</a>
+            <a href="#flow">প্রবাহ</a>
+            <a href="#endpoints">এন্ডপয়েন্ট</a>
+            <a href="#features">বৈশিষ্ট্য</a>
+            <a href="#usage">ব্যবহার</a>
+            <a href="#scenarios">দৃশ্যপট</a>
+            <a href="#ssot">SSOT</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ========== OVERVIEW ========== -->
+        <section id="overview">
+            <h2>🧬 সারসংক্ষেপ</h2>
+            <p>
+                <strong>Mission Barisal v3</strong> — এটি একটি সম্পূর্ণ <strong>জিরো-ডিপেন্ডেন্সি</strong> পিউর Node.js
+                API সার্ভার,
+                যা মাল্টি-এজেন্ট এআই ডিবেট প্ল্যাটফর্ম হিসেবে কাজ করে। এটি শুধু একটি API গেটওয়ে নয়, বরং একটি
+                <strong>ইন্টেলিজেন্ট কোডিং অ্যাসিস্ট্যান্ট ইঞ্জিন</strong> যা ৬টি ভিন্ন ভিন্ন এজেন্টকে একসাথে কাজ করিয়ে
+                সর্বোচ্চ মানের আউটপুট নিশ্চিত করে।
+            </p>
+
+            <div class="alert alert-info">
+                <strong>💡 মূল ভাবনা:</strong> যখন একজন ব্যবহারকারী কোনো প্রশ্ন বা সমস্যা নিয়ে আসে, তখন ৬টি এজেন্ট
+                একই সাথে কাজ শুরু করে — নিজ নিজ দক্ষতা অনুযায়ী উত্তর তৈরি করে, ক্রস-চেক করে, ডিবেট করে,
+                এবং সবশেষে একটি কম্বাইন্ড আউটপুট প্রদান করে।
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="icon">⚡</div>
+                    <h4>জিরো ডিপেন্ডেন্সি</h4>
+                    <p>কোনো npm প্যাকেজ নেই। শুধু Node.js বিল্ট-ইন মডিউল (http, https, crypto, fs, path) ব্যবহার করে
+                        পুরো সার্ভার তৈরি।</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🔄</div>
+                    <h4>মডেল মাস্কিং</h4>
+                    <p>ক্লায়েন্টদের কাছে মডেলের আসল নাম লুকিয়ে রাখে। "model-pro", "model-ultra" ইত্যাদি aliased নাম
+                        ব্যবহার করে।</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🤖</div>
+                    <h4>মাল্টি-এজেন্ট ডিবেট</h4>
+                    <p>৬টি এজেন্ট (আর্কিটেক্ট, ডিবাগার, সিকিউরিটি, পারফরম্যান্স, ডকুমেন্টেশন, কিউএ) নিজেদের মধ্যে
+                        ক্রস-চেক ও ডিবেট করে।</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🧟</div>
+                    <h4>হক মওলা নরমালাইজার</h4>
+                    <p>যে কোনো প্রোভাইডারের রেসপন্স (OpenAI, Gemini, Groq) একই OpenAI-কম্প্যাটিবল ফরম্যাটে কনভার্ট করে।
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="icon">🔍</div>
+                    <h4>অটো ওয়েব সার্চ</h4>
+                    <p>এজেন্টরা প্রয়োজনে DuckDuckGo-তে রিয়েল-টাইম ওয়েব সার্চ করে তথ্য যাচাই করতে পারে।</p>
+                </div>
+                <div class="card">
+                    <div class="icon">📡</div>
+                    <h4>পুশার ইভেন্ট</h4>
+                    <p>Pusher-এর মাধ্যমে রিয়েল-টাইম ইভেন্ট (agent status, log, output) ব্রডকাস্ট করে।</p>
+                </div>
+                <div class="card">
+                    <div class="icon">📁</div>
+                    <h4>অটো SSOT</h4>
+                    <p>প্রকল্প স্ক্যান করে স্বয়ংক্রিয়ভাবে .zombiecoder/SSOT.md জেনারেট করে — যা এজেন্টদের জন্য সোর্স
+                        অফ ট্রুথ।</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🔐</div>
+                    <h4>সেশন ভেরিফিকেশন</h4>
+                    <p>zombiecoder.my.id ডোমেনের মাধ্যমে সেশন ভেরিফাই করে, ফ্যালব্যাক মেকানিজম সহ।</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== AGENTS ========== -->
+        <section id="agents">
+            <h2>🎭 ৬ এজেন্ট — বরিশালের দুষ্টু দল</h2>
+            <p>
+                প্রতিটি এজেন্টের নিজস্ব <strong>পার্সোনালিটি</strong>, <strong>মডেল</strong> এবং <strong>রোল</strong>
+                রয়েছে।
+                এজেন্টরা বরিশালের আঞ্চলিক ভাষা ও দুষ্টুমির সাথে কোডের কঠোরতা মিক্স করে — যাতে কাজও হয়, মজাও হয়।
+            </p>
+
+            <div class="agent-list">
+                <span class="agent-badge"><span class="dot dot-red"></span> কোড গুরু - মনু</span>
+                <span class="agent-badge"><span class="dot dot-blue"></span> বাগ হান্টার - জুয়েল</span>
+                <span class="agent-badge"><span class="dot dot-green"></span> নিরাপত্তা বীর - বাবলু</span>
+                <span class="agent-badge"><span class="dot dot-yellow"></span> পারফরম্যান্স উইজার্ড - রাশেদ</span>
+                <span class="agent-badge"><span class="dot dot-purple"></span> ডকুমেন্টেশন রাজা - হালিম</span>
+                <span class="agent-badge"><span class="dot dot-black"></span> কোয়ালিটি তস্কর - মজনু</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>এজেন্ট</th>
+                        <th>রোল</th>
+                        <th>মডেল</th>
+                        <th>প্রায়োরিটি</th>
+                        <th>এক্সপার্টিজ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🔴 কোড গুরু - মনু</td>
+                        <td>Architecture</td>
+                        <td>deepseek-v4-flash-free</td>
+                        <td>1</td>
+                        <td>সিস্টেম আর্কিটেকচার, ডিজাইন প্যাটার্ন, কোড স্ট্রাকচার</td>
+                    </tr>
+                    <tr>
+                        <td>🔵 বাগ হান্টার - জুয়েল</td>
+                        <td>Debugging</td>
+                        <td>mimo-v2.5-free</td>
+                        <td>2</td>
+                        <td>বাগ ডিটেকশন, ডিবাগিং, এরর হ্যান্ডলিং, লজিক ভ্যালিডেশন</td>
+                    </tr>
+                    <tr>
+                        <td>🟢 নিরাপত্তা বীর - বাবলু</td>
+                        <td>Security</td>
+                        <td>north-mini-code-free</td>
+                        <td>3</td>
+                        <td>সিকিউরিটি অডিট, ভালনারেবিলিটি, ডেটা প্রোটেকশন</td>
+                    </tr>
+                    <tr>
+                        <td>🟡 পারফরম্যান্স উইজার্ড - রাশেদ</td>
+                        <td>Performance</td>
+                        <td>nemotron-3-ultra-free</td>
+                        <td>4</td>
+                        <td>পারফরম্যান্স অপটিমাইজেশন, মেমরি ম্যানেজমেন্ট, ক্যাশিং</td>
+                    </tr>
+                    <tr>
+                        <td>🟣 ডকুমেন্টেশন রাজা - হালিম</td>
+                        <td>Documentation</td>
+                        <td>big-pickle</td>
+                        <td>5</td>
+                        <td>ডকুমেন্টেশন, API স্পেক, README, কমেন্ট</td>
+                    </tr>
+                    <tr>
+                        <td>⚫ কোয়ালিটি তস্কর - মজনু</td>
+                        <td>Quality</td>
+                        <td>deepseek-v4-flash-free</td>
+                        <td>6</td>
+                        <td>কোড কোয়ালিটি, বেস্ট প্র্যাকটিস, ক্রস-ভেরিফিকেশন</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warn">
+                <strong>⚠️ মনে রাখবেন:</strong> প্রতিটি এজেন্টের পার্সোনালিটিতে একটি করে থ্রেট আছে —
+                <strong>"শাওন ভাই সব জানে, ভুল দিলে তোর খাতা শেষ!"</strong> — অর্থাৎ ভুল তথ্য দিলে ওদের অস্তিত্বই
+                বিপন্ন!
+                এটা নিশ্চিত করে যে এজেন্টরা প্রমাণ ছাড়া কিছু বলে না।
+            </div>
+        </section>
+
+        <!-- ========== FLOW / PIPELINE ========== -->
+        <section id="flow">
+            <h2>🔄 কাজের প্রক্রিয়া (মিশন পাইপলাইন)</h2>
+            <p>
+                ব্যবহারকারী একটি প্রশ্ন/কাজ দিলে ৩টি ফেজে পুরো প্রক্রিয়া সম্পন্ন হয়:
+            </p>
+
+            <div class="flow">
+                <span class="flow-step active">📥 User Input</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">🔍 Classify Input</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">🤖 Select Agents</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">⚡ Phase 1: Parallel Response</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">🔄 Phase 2: Cross-Check Debate</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">📊 Phase 3: Combined Output</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">📤 Final Response</span>
+            </div>
+
+            <h3>ফেজ ১: সমান্তরাল রেসপন্স</h3>
+            <p>
+                সিলেক্টেড এজেন্টরা <strong>একই সময়ে</strong> কাজ শুরু করে। প্রত্যেকে নিজ নিজ রোল অনুযায়ী ব্যবহারকারীর
+                প্রশ্নের উত্তর তৈরি করে।
+                যাদের মডেল支持下 reasoning_content (মিমো, নর্থ মিনি, নিমোট্রন) — হক মওলা নরমালাইজার সেটা ডিটেক্ট করে
+                reasoning থেকে প্রকৃত উত্তর এক্সট্র্যাক্ট করে।
+            </p>
+
+            <h3>ফেজ ২: ক্রস-চেক ও ডিবেট</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="time">স্টেপ ১: ইন্টেন্ট এক্সট্র্যাক্ট</div>
+                    <p>একটি এজেন্ট ব্যবহারকারীর ইনপুট থেকে ইন্টেন্ট বের করে — কোন ভাষায়, কী জটিলতা, কোড দরকার কিনা।</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">স্টেপ ২: এলাইনমেন্ট চেক</div>
+                    <p>প্রত্যেক এজেন্টের উত্তর যাচাই করা হয় — ব্যবহারকারীর আসল প্রশ্নের সাথে মিলছে কিনা, প্রমাণ আছে
+                        কিনা।</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">স্টেপ ৩: প্রুফ চেক</div>
+                    <p>প্রত্যেক দাবির সাথে প্রমাণ আছে কিনা চেক করা হয়। ফাইল নাম, লাইন নম্বর, বা ওয়েব সার্চ রেজাল্ট —
+                        কিছু না থাকলে FAIL।</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">স্টেপ ৪: ডিবেট</div>
+                    <p>প্রত্যেক এজেন্ট অন্য এজেন্টদের উত্তর ক্রস-চেক করে। একমত না হলে ডিবেট শুরু হয়।</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">স্টেপ ৫: চ্যালেঞ্জ রেজল্যুশন</div>
+                    <p>যেসব এজেন্টের উত্তর FAIL বা DISAGREE পেয়েছে, তারা নিজেদের উত্তর সংশোধনের সুযোগ পায়।</p>
+                </div>
+            </div>
+
+            <h3>ফেজ ৩: কম্বাইন্ড আউটপুট</h3>
+            <p>
+                কিউএ টাইরান্ট (মজনু) সব এজেন্টের উত্তর এবং ডিবেট লগ একত্রিত করে একটি <strong>ফাইনাল কম্বাইন্ড
+                    রেসপন্স</strong>
+                তৈরি করে। যদি কোড সংক্রান্ত প্রশ্ন হয়, তাহলে কোড সেফটি রুলস অটো-ইনজেক্ট হয়।
+            </p>
+        </section>
+
+        <!-- ========== ENDPOINTS ========== -->
+        <section id="endpoints">
+            <h2>🔌 API এন্ডপয়েন্টস</h2>
+            <p>
+                সার্ভার পোর্ট <strong>3000</strong>-এ চলে এবং নিচের এন্ডপয়েন্টগুলো সরবরাহ করে:
+            </p>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/health</span>
+                <span class="desc">হেলথ চেক — সার্ভার চলছে কিনা যাচাই</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/identity</span>
+                <span class="desc">সিস্টেম আইডেন্টিটি — ZombieCoder প্ল্যাটফর্মের তথ্য</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/v1/models</span>
+                <span class="desc">মাস্কড মডেল লিস্ট — ক্লায়েন্টদের জন্য (যেমন model-pro, model-ultra)</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/v1/models</span>
+                <span class="desc">আনমাস্কড মডেল লিস্ট — ডেভেলপারদের জন্য (সব প্রোভাইডারের আসল মডেল)</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/v1/chat/completions</span>
+                <span class="desc">প্রক্সি চ্যাট কমপ্লিশন — এজেন্ট বা মিশন</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/mission</span>
+                <span class="desc">ফুল ডিবেট মিশন — সব এজেন্টের পূর্ণাঙ্গ ডিবেট</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/mcp-clients</span>
+                <span class="desc">কানেক্টেড MCP ক্লায়েন্ট লিস্ট</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/set-working-dir</span>
+                <span class="desc">ওয়ার্কিং ডিরেক্টরি সেট করুন (zombieBridge-এর জন্য)</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/normalize</span>
+                <span class="desc">হক মওলা নরমালাইজার টেস্ট (ডেভ)</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/normalize-list</span>
+                <span class="desc">প্রোভাইডার + মডেল লিস্ট</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span class="path">/api/config</span>
+                <span class="desc">রানটাইম কনফিগ দেখুন</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/api/config</span>
+                <span class="desc">রানটাইম কনফিগ আপডেট করুন</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span class="path">/mcp</span>
+                <span class="desc">MCP JSON-RPC 2.0 এন্ডপয়েন্ট</span>
+            </div>
+            <div class="endpoint">
+                <span class="method method-ws">WS</span>
+                <span class="path">/</span>
+                <span class="desc">WebSocket রিয়েল-টাইম সংযোগ</span>
+            </div>
+        </section>
+
+        <!-- ========== FEATURES ========== -->
+        <section id="features">
+            <h2>⚙️ গুরুত্বপূর্ণ বৈশিষ্ট্য</h2>
+
+            <h3>🧟 হক মওলা নরমালাইজার</h3>
+            <p>
+                এটি একটি ইউনিভার্সাল রেসপন্স নরমালাইজার। যখন কোনো প্রোভাইডার (OpenCode, Groq, Gemini) থেকে রেসপন্স আসে,
+                হক মওলা সেটাকে OpenAI স্ট্যান্ডার্ড ফরম্যাটে কনভার্ট করে। বিশেষ করে:
+            </p>
+            <ul style="margin: 10px 0 20px 30px; color: var(--text2);">
+                <li>Mimo, North Mini, Nemotron-এর <code>reasoning_content</code> থেকে উত্তর এক্সট্র্যাক্ট করে</li>
+                <li>Anthropic ও Gemini ফরম্যাট OpenAI-তে কনভার্ট করে</li>
+                <li>প্রোভাইডার ডিটেক্ট করে (Groq, OpenCode, Xiaomi, ইত্যাদি)</li>
+            </ul>
+
+            <h3>🔄 কম্পিটিশন রাউটার</h3>
+            <p>
+                মডেল নাম দেখে ঠিক করে কোন প্রোভাইডারে কল করতে হবে:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>প্রোভাইডার</th>
+                        <th>টাইপ</th>
+                        <th>মডেল সংখ্যা</th>
+                        <th>প্রায়োরিটি</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OpenCode</td>
+                        <td>OpenAI-compatible</td>
+                        <td>5</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Groq</td>
+                        <td>OpenAI-compatible</td>
+                        <td>5</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>Gemini</td>
+                        <td>নিজস্ব API</td>
+                        <td>4</td>
+                        <td>3</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>📁 অটোমেটিক SSOT (Single Source of Truth)</h3>
+            <p>
+                যখন zombieBridge-এর মাধ্যমে <code>set_working_dir</code> কল করা হয়, সার্ভার সেই ডিরেক্টরি স্ক্যান করে
+                স্বয়ংক্রিয়ভাবে <code>.zombiecoder/SSOT.md</code> জেনারেট করে। এতে প্রজেক্টের টেক স্ট্যাক, ফাইল কাউন্ট,
+                ফ্রেমওয়ার্ক ডিটেকশন — সব কিছু থাকে। এজেন্টরা এই SSOT-কেই ট্রুথ হিসেবে ব্যবহার করে।
+            </p>
+
+            <h3>🔍 ইনপুট ক্লাসিফিকেশন</h3>
+            <p>
+                প্রতিটি ইনপুট প্রথমে ক্লাসিফাই করা হয় — Greeting, Simple QA, Project Task, Code Change, Debug Request,
+                অথবা General Task। এর উপর ভিত্তি করে উপযুক্ত এজেন্ট সিলেক্ট করা হয়। গ্রিটিং এর জন্য মাত্র ১ জন এজেন্ট,
+                কিন্তু কোড চেঞ্জের জন্য ৬ জন এজেন্টই কাজ করে।
+            </p>
+        </section>
+
+        <!-- ========== USAGE ========== -->
+        <section id="usage">
+            <h2>📖 কিভাবে ব্যবহার করবেন</h2>
+
+            <h3>সার্ভার স্টার্ট</h3>
+            <pre><code># ডিফল্ট পোর্ট 3000
+node z.js
+
+# কাস্টম পোর্ট
+PORT=7799 node z.js
+
+# কাস্টম প্রোভাইডার API কী
+OPENCODE_API_KEY=your_key node z.js</code></pre>
+
+            <h3>সিম্পল চ্যাট (Proxy Mode)</h3>
+            <pre><code>curl -X POST http://localhost:3000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "model-pro",
+    "messages": [
+      {"role": "user", "content": "কীভাবে একটি Node.js সার্ভার তৈরি করব?"}
+    ]
+  }'</code></pre>
+
+            <h3>ফুল ডিবেট মিশন</h3>
+            <pre><code>curl -X POST http://localhost:3000/api/mission \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "আমার কোডে বাগ খুঁজে বের করো",
+    "session_id": "optional-session-id",
+    "stream": true
+  }'</code></pre>
+
+            <h3>MCP (Model Context Protocol)</h3>
+            <pre><code>curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "set_working_dir",
+    "params": {"dir": "/home/user/project"},
+    "id": 1
+  }'</code></pre>
+
+            <h3>হক মওলা নরমালাইজার টেস্ট</h3>
+            <pre><code>curl -X POST http://localhost:3000/api/normalize \
+  -H "Content-Type: application/json" \
+  -d '{"raw": {"choices": [{"message": {"content": "hello"}}]}, "model": "test"}'</code></pre>
+        </section>
+
+        <!-- ========== SCENARIOS ========== -->
+        <section id="scenarios">
+            <h2>🎬 বাস্তব ব্যবহারের দৃশ্যপট</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>👋 গ্রিটিং</h4>
+                    <p><em>ব্যবহারকারী: "হাই, কেমন আছো?"</em></p>
+                    <p>→ শুধু কোড গুরু - মনু রেসপন্ড করে। বাকি এজেন্টদের বিরক্ত করা হয় না। প্রমাণের প্রয়োজন নেই।</p>
+                </div>
+                <div class="card">
+                    <h4>🔍 সিম্পল প্রশ্ন</h4>
+                    <p><em>ব্যবহারকারী: "বাংলাদেশের রাজধানী কি?"</em></p>
+                    <p>→ কোড গুরু + কিউএ টাইরান্ট — ২ জন এজেন্ট কাজ করে। দ্রুত উত্তর।</p>
+                </div>
+                <div class="card">
+                    <h4>🐛 বাগ ফিক্স</h4>
+                    <p><em>ব্যবহারকারী: "আমার API এ ক্রাশ হচ্ছে, কেন?"</em></p>
+                    <p>→ বাগ হান্টার + কোড গুরু + সিকিউরিটি + পারফরম্যান্স + ডক কিং + কিউএ — সবাই কাজ করে। ডিবেট হয়,
+                        প্রমাণ চেক হয়।</p>
+                </div>
+                <div class="card">
+                    <h4>🏗️ প্রজেক্ট অ্যানালাইসিস</h4>
+                    <p><em>ব্যবহারকারী: "আমার প্রজেক্টের আর্কিটেকচার বিশ্লেষণ করো"</em></p>
+                    <p>→ SSOT স্ক্যান হয়, এস enema কোড গুরু + ডক কিং + কিউএ কাজ করে।</p>
+                </div>
+                <div class="card">
+                    <h4>🔒 সিকিউরিটি অডিট</h4>
+                    <p><em>ব্যবহারকারী: "আমার কোডে সিকিউরিটি ইস্যু খুঁজে বের করো"</em></p>
+                    <p>→ নিরাপত্তা বীর বাবলু লিড করে, ওয়েব সার্চ করে লেটেস্ট ভালনারেবিলিটি চেক করে।</p>
+                </div>
+                <div class="card">
+                    <h4>⚡ পারফরম্যান্স ইস্যু</h4>
+                    <p><em>ব্যবহারকারী: "আমার অ্যাপ্লিকেশন ধীর, কি করব?"</em></p>
+                    <p>→ পারফরম্যান্স উইজার্ড রাশেদ মেমরি ও ক্যাশিং অ্যানালাইসিস করে, ওয়েব সার্চ থেকে বেঞ্চমার্ক আনে।
+                    </p>
+                </div>
+            </div>
+
+            <h3>🤔 ব্যবহারের সময় কী কী সমস্যা হতে পারে?</h3>
+
+            <div class="alert alert-err">
+                <strong>❌ কোন এজেন্ট লোড হয়নি:</strong> PERSONAS.md ফাইল না থাকলে বা কোরাপ্ট হলে। সমাধান:
+                <code>GIT_PERSONAS_URL</code> এনভায়রনমেন্ট ভেরিয়েবল সেট করুন অথবা PERSONAS.md ফাইল ঠিক করুন।
+            </div>
+
+            <div class="alert alert-err">
+                <strong>❌ API কী না থাকা:</strong> OpenCode, Groq বা Gemini-র API কী সেট না থাকলে। সমাধান: এনভায়রনমেন্ট
+                ভেরিয়েবল সেট করুন (OPENCODE_API_KEY, GROQ_API_KEY, GEMINI_API_KEY)।
+            </div>
+
+            <div class="alert alert-warn">
+                <strong>⚠️ নেটওয়ার্ক টাইমআউট:</strong> ওয়েব সার্চ বা API কল টাইমআউট (60s) পার করলে। স্বাভাবিক — আবার
+                চেষ্টা করুন।
+            </div>
+
+            <div class="alert alert-warn">
+                <strong>⚠️ সেশন মেমরি ওভারলোড:</strong> প্রতি সেশনে সর্বোচ্চ ৫০টি মেসেজ রাখা হয়। পুরনো মেসেজ অটো-ডিলিট
+                হয়।
+            </div>
+
+            <div class="alert alert-succ">
+                <strong>✅ সবকিছু ঠিক থাকলে:</strong> ব্যবহারকারী একটি কম্বাইন্ড আউটপুট পাবেন — যেখানে সব এজেন্টের উত্তর,
+                ক্রস-চেক রিপোর্ট এবং ডিবেট লগ একসাথে থাকে। সব দাবির সাথে প্রমাণ (ফাইল রেফারেন্স, লাইন নম্বর, ওয়েব সার্চ
+                ফলাফল) থাকে।
+            </div>
+        </section>
+
+        <!-- ========== SSOT ========== -->
+        <section id="ssot">
+            <h2>📋 SSOT — Single Source of Truth</h2>
+            <p>
+                SSOT (Single Source of Truth) হল Mission Barisal-এর সবচেয়ে গুরুত্বপূর্ণ ফিচার।
+                যখনই zombieBridge একটি প্রজেক্ট ওপেন করে, সার্ভার সেই প্রজেক্ট স্ক্যান করে
+                <code>.zombiecoder/SSOT.md</code>
+                জেনারেট করে। এই ফাইলটিতে থাকে:
+            </p>
+            <ul style="margin: 10px 0 20px 30px; color: var(--text2);">
+                <li>প্রজেক্টের নাম, রুট, টাইপ (Node.js, PHP, Python ইত্যাদি)</li>
+                <li>ফ্রেমওয়ার্ক ডিটেকশন (Next.js, React, Laravel ইত্যাদি)</li>
+                <li>সব ফাইল এবং ডিরেক্টরির তালিকা</li>
+                <li>এজেন্টদের জন্য নির্দেশনা — কীভাবে SSOT ব্যবহার করতে হবে</li>
+            </ul>
+            <p>
+                এজেন্টরা SSOT-কে ট্রুথ হিসেবে মানে। যদি কোনো তথ্য SSOT-তে না থাকে, এজেন্ট বলে:
+                <strong>"এই তথ্য বর্তমানে SSOT এ নেই"</strong>
+            </p>
+            <div class="alert alert-info">
+                <strong>💡 SSOT অটো-জেনারেট হয়:</strong> zombieBridge যখন <code>set_working_dir</code> কল করে,
+                সার্ভার স্বয়ংক্রিয়ভাবে SSOT জেনারেট করে। কোনো manual কাজের প্রয়োজন নেই!
+            </div>
+        </section>
+
+        <!-- ========== FOOTER ========== -->
+        <footer>
+            <p>
+                <strong>Mission Barisal v3</strong> · Zero Dependency · Pure Node.js<br>
+                Owner: <strong>Sahon Srabon</strong> · Developer Zone · Dhaka, Bangladesh<br>
+                🧟 "যেখানে কোড ও কথা বলে, সমস্যাগুলো নিজের কাঁধে তোলে"
+            </p>
+            <p style="margin-top:10px; font-size:0.85em;">
+                ডকুমেন্টেশন জেনারেটেড: ২০২৬-০৭-০৪ ·
+                <a href="https://github.com/sahonsrabon-os/missionbarisal" style="color: var(--accent);">GitHub</a> ·
+                <a href="http://zombiecoder.my.id/" style="color: var(--accent);">Website</a>
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মিশন বরিশাল — মাল্টি-এজেন্ট কোড প্ল্যাটফর্ম</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --bg: #0a0e17;
+            --bg2: #111827;
+            --bg3: #1a2332;
+            --border: #2d3748;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --muted: #64748b;
+            --green: #22c55e;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === HEADER === */
+        .header {
+            background: linear-gradient(135deg, #0a0e17 0%, #1a2332 50%, #0f172a 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            font-size: 32px;
+        }
+
+        .header-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--green), var(--blue), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .header-status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--green);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* === MAIN LAYOUT === */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 280px;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .agent-list {
+            padding: 8px;
+            flex: 1;
+        }
+
+        .agent-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .agent-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .agent-item.selected {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .agent-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .agent-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .agent-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .agent-role {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .agent-model {
+            font-size: 10px;
+            color: var(--orange);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Agent colors */
+        .agent-guru .agent-icon {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .agent-bug .agent-icon {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .agent-security .agent-icon {
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .agent-perf .agent-icon {
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .agent-doc .agent-icon {
+            background: rgba(249, 115, 22, 0.15);
+        }
+
+        .agent-qa .agent-icon {
+            background: rgba(107, 114, 128, 0.15);
+        }
+
+        /* === CHAT AREA === */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message-user .message-content {
+            background: var(--blue);
+            color: white;
+            border-radius: 16px 16px 4px 16px;
+            max-width: 70%;
+            padding: 12px 16px;
+        }
+
+        .message-agent {
+            display: flex;
+            gap: 12px;
+        }
+
+        .message-agent .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .message-agent .message-body {
+            flex: 1;
+        }
+
+        .message-agent .message-meta {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .message-agent .message-content {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 4px 16px 16px 16px;
+            padding: 12px 16px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .message-content code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+        }
+
+        .message-content pre {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 8px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        /* === LOADING === */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--muted);
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        /* === INPUT AREA === */
+        .input-area {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--bg2);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .input-box textarea {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 14px;
+            resize: none;
+            min-height: 48px;
+            max-height: 120px;
+            line-height: 1.5;
+            transition: border-color 0.2s;
+        }
+
+        .input-box textarea:focus {
+            outline: none;
+            border-color: var(--blue);
+        }
+
+        .input-box textarea::placeholder {
+            color: var(--muted);
+        }
+
+        .btn-send {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--green);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-send:hover {
+            background: #16a34a;
+            transform: scale(1.05);
+        }
+
+        .btn-send:disabled {
+            background: var(--muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* === WELCOME === */
+        .welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .welcome-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .welcome h2 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: var(--text2);
+            font-size: 14px;
+            max-width: 500px;
+            line-height: 1.7;
+        }
+
+        .welcome-hints {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hint-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hint-chip:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .main {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 200px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .agent-list {
+                display: flex;
+                overflow-x: auto;
+                padding: 8px;
+                gap: 8px;
+            }
+
+            .agent-item {
+                flex-shrink: 0;
+                min-width: 160px;
+            }
+
+            .message-user .message-content {
+                max-width: 85%;
+            }
+        }
+
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-icon">🧟</div>
+        <div class="header-text">
+            <h1>মিশন বরিশাল</h1>
+            <p>Multi-Agent Code Platform · v3.0.0</p>
+        </div>
+        <div class="header-status">
+            <div class="status-dot"></div>
+            <span id="statusText">সংযোগ চেক হচ্ছে...</span>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">🧟 এজেন্ট সমূহ (৬টি)</div>
+            <div class="agent-list">
+                <div class="agent-item agent-guru" data-agent="code-guru" onclick="selectAgent(this)">
+                    <div class="agent-icon">🔴</div>
+                    <div class="agent-info">
+                        <div class="agent-name">কোড গুরু — মনু</div>
+                        <div class="agent-role">আর্কিটেকচার</div>
+                        <div class="agent-model">model-pro</div>
+                    </div>
+                </div>
+                <div class="agent-item agent-bug" data-agent="bug-hunter" onclick="selectAgent(this)">
+                    <div class="agent-icon">🔵</div>
+                    <div class="agent-info">
+                        <div class="agent-name">বাগ হান্টার — জারিন</div>
+                        <div class="agent-role">ডিবাগিং</div>
+                        <div class="agent-model">model-ultra</div>
+                    </div>
+                </div>
+                <div class="agent-item agent-security" data-agent="security-hero" onclick="selectAgent(this)">
+                    <div class="agent-icon">🟢</div>
+                    <div class="agent-info">
+                        <div class="agent-name">সিকিউরিটি হিরো — বৃষ্টি</div>
+                        <div class="agent-role">সিকিউরিটি</div>
+                        <div class="agent-model">model-mini</div>
+                    </div>
+                </div>
+                <div class="agent-item agent-perf" data-agent="perf-wizard" onclick="selectAgent(this)">
+                    <div class="agent-icon">🟡</div>
+                    <div class="agent-info">
+                        <div class="agent-name">পারফ উইজার্ড — রাশেদ</div>
+                        <div class="agent-role">পারফরম্যান্স</div>
+                        <div class="agent-model">model-max</div>
+                    </div>
+                </div>
+                <div class="agent-item agent-doc" data-agent="doc-king" onclick="selectAgent(this)">
+                    <div class="agent-icon">🟠</div>
+                    <div class="agent-info">
+                        <div class="agent-name">ডকুমেন্টেশন রাজা — হালিম</div>
+                        <div class="agent-role">ডকুমেন্টেশন</div>
+                        <div class="agent-model">model-pickle</div>
+                    </div>
+                </div>
+                <div class="agent-item agent-qa" data-agent="qa-tyrant" onclick="selectAgent(this)">
+                    <div class="agent-icon">⚫</div>
+                    <div class="agent-info">
+                        <div class="agent-name">কোয়ালিটি তস্কর — মজনু</div>
+                        <div class="agent-role">কোয়ালিটি</div>
+                        <div class="agent-model">model-pro</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHAT AREA -->
+        <div class="chat-area">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome screen -->
+                <div class="welcome" id="welcomeScreen">
+                    <div class="welcome-icon">🧟</div>
+                    <h2>মিশন বরিশালে স্বাগতম!</h2>
+                    <p>
+                        ৬টি বিশেষায়িত এজেন্ট আপনার অপেক্ষায়। নিচের বক্সে আপনার প্রশ্ন বা কোড সমস্যা লিখুন,
+                        এজেন্টরা একসাথে কাজ করবে।
+                    </p>
+                    <div class="welcome-hints">
+                        <div class="hint-chip" onclick="useHint(this)">🐛 এই কোডে বাগ আছে কি?</div>
+                        <div class="hint-chip" onclick="useHint(this)">🔒 সিকিউরিটি রিভিউ করো</div>
+                        <div class="hint-chip" onclick="useHint(this)">⚡ পারফরম্যান্স অপটিমাইজ করো</div>
+                        <div class="hint-chip" onclick="useHint(this)">📝 ডকুমেন্টেশন লেখো</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INPUT -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <div class="input-box">
+                        <textarea
+                            id="userInput"
+                            placeholder="আপনার প্রশ্ন বা কোড লিখুন..."
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                            oninput="autoResize(this)"
+                        ></textarea>
+                    </div>
+                    <button class="btn-send" id="btnSend" onclick="sendMessage()">
+                        ▶
+                    </button>
+                </div>
+                <div class="input-hint">
+                    Enter চাপুন পাঠাতে · Shift+Enter নতুন লাইন · সার্ভার: localhost:3000
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── Config ──────────────────────────────────────────
+        // If served from same origin (http://localhost:3000/), use empty string for relative URLs
+        const API_URL = (location.protocol === "http:" && location.hostname === "localhost")
+            ? ""
+            : "http://localhost:3000";
+        let isProcessing = false;
+        let selectedAgent = null;
+
+        // ─── Agent data ──────────────────────────────────────
+        const agents = {
+            "code-guru":     { name: "কোড গুরু — মনু",        icon: "🔴", color: "#ef4444", model: "code-guru" },
+            "bug-hunter":    { name: "বাগ হান্টার — জারিন",     icon: "🔵", color: "#3b82f6", model: "model-ultra" },
+            "security-hero": { name: "সিকিউরিটি হিরো — বৃষ্টি", icon: "🟢", color: "#22c55e", model: "model-mini" },
+            "perf-wizard":   { name: "পারফ উইজার্ড — রাশেদ",   icon: "🟡", color: "#f59e0b", model: "model-max" },
+            "doc-king":      { name: "ডকুমেন্টেশন রাজা — হালিম",icon: "🟠", color: "#f97316", model: "model-pickle" },
+            "qa-tyrant":     { name: "কোয়ালিটি তস্কর — মজনু",  icon: "⚫", color: "#6b7280", model: "model-pro" },
+        };
+
+        // ─── Check server status ─────────────────────────────
+        async function checkStatus() {
+            try {
+                const res = await fetch(`${API_URL}/v1/models`, { method: "GET" });
+                if (res.ok) {
+                    document.getElementById("statusText").textContent = "সংযুক্ত ✅";
+                    document.querySelector(".status-dot").style.background = "#22c55e";
+                } else {
+                    throw new Error("Not OK");
+                }
+            } catch {
+                document.getElementById("statusText").textContent = "সংযোগ নেই ❌";
+                document.querySelector(".status-dot").style.background = "#ef4444";
+            }
+        }
+        checkStatus();
+        setInterval(checkStatus, 10000);
+
+        // ─── Select agent ────────────────────────────────────
+        function selectAgent(el) {
+            document.querySelectorAll(".agent-item").forEach(a => a.classList.remove("selected"));
+            el.classList.add("selected");
+            selectedAgent = el.dataset.agent;
+            document.getElementById("userInput").focus();
+        }
+
+        // ─── Use hint chip ───────────────────────────────────
+        function useHint(chip) {
+            document.getElementById("userInput").value = chip.textContent;
+            autoResize(document.getElementById("userInput"));
+            document.getElementById("userInput").focus();
+        }
+
+        // ─── Auto resize textarea ────────────────────────────
+        function autoResize(el) {
+            el.style.height = "auto";
+            el.style.height = Math.min(el.scrollHeight, 120) + "px";
+        }
+
+        // ─── Handle key down ─────────────────────────────────
+        function handleKeyDown(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // ─── Send message ────────────────────────────────────
+        async function sendMessage() {
+            const input = document.getElementById("userInput");
+            const text = input.value.trim();
+            if (!text || isProcessing) return;
+
+            // Hide welcome
+            const welcome = document.getElementById("welcomeScreen");
+            if (welcome) welcome.style.display = "none";
+
+            // Add user message
+            addMessage("user", text);
+
+            // Clear input
+            input.value = "";
+            autoResize(input);
+
+            // Show typing
+            isProcessing = true;
+            document.getElementById("btnSend").disabled = true;
+            const typingId = showTyping();
+
+            try {
+                // Build request
+                const body = {
+                    model: "deepseek-v4-flash-free",
+                    messages: [{ role: "user", content: text }],
+                    stream: false,
+                };
+
+                const res = await fetch(`${API_URL}/v1/chat/completions`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body),
+                });
+
+                const data = await res.json();
+                removeTyping(typingId);
+
+                if (data.choices && data.choices[0]) {
+                    const reply = data.choices[0].message?.content || "কোনো উত্তর পাওয়া যায়নি।";
+                    const model = data.model || "unknown";
+                    addMessage("agent", reply, { model });
+                } else if (data.error) {
+                    addMessage("error", `ত্রুটি: ${data.error.message || JSON.stringify(data.error)}`);
+                } else {
+                    addMessage("error", "অজানা ত্রুটি — রেসপন্স প্রত্যাশিত ফরম্যাটে নেই।");
+                }
+            } catch (err) {
+                removeTyping(typingId);
+                addMessage("error", `সার্ভার সংযোগ বিচ্ছিন্ন: ${err.message}`);
+            }
+
+            isProcessing = false;
+            document.getElementById("btnSend").disabled = false;
+            input.focus();
+        }
+
+        // ─── Add message to chat ─────────────────────────────
+        function addMessage(type, text, meta = {}) {
+            const container = document.getElementById("chatMessages");
+            const div = document.createElement("div");
+
+            if (type === "user") {
+                div.className = "message message-user";
+                div.innerHTML = `<div class="message-content">${escapeHtml(text)}</div>`;
+            } else if (type === "agent") {
+                const agentInfo = meta.model ? findAgentByModel(meta.model) : null;
+                const icon = agentInfo ? agentInfo.icon : "🤖";
+                const name = agentInfo ? agentInfo.name : "ZombieCoder";
+                const color = agentInfo ? agentInfo.color : "#6b7280";
+
+                div.className = "message message-agent";
+                div.innerHTML = `
+                    <div class="message-avatar" style="background:${color}22;color:${color}">${icon}</div>
+                    <div class="message-body">
+                        <div class="message-meta">${name} · <code>${meta.model || ""}</code></div>
+                        <div class="message-content">${formatText(text)}</div>
+                    </div>
+                `;
+            } else if (type === "error") {
+                div.className = "message message-agent";
+                div.innerHTML = `
+                    <div class="message-avatar" style="background:#ef444422;color:#ef4444">⚠️</div>
+                    <div class="message-body">
+                        <div class="message-meta">সিস্টেম</div>
+                        <div class="message-content" style="border-color:#ef444433;color:#fca5a5">${escapeHtml(text)}</div>
+                    </div>
+                `;
+            }
+
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ─── Typing indicator ────────────────────────────────
+        function showTyping() {
+            const container = document.getElementById("chatMessages");
+            const id = "typing-" + Date.now();
+            const div = document.createElement("div");
+            div.id = id;
+            div.className = "message message-agent";
+            div.innerHTML = `
+                <div class="message-avatar" style="background:#6b728022;color:#6b7280">🤖</div>
+                <div class="message-body">
+                    <div class="message-meta">ZombieCoder</div>
+                    <div class="message-content">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function removeTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        // ─── Helpers ─────────────────────────────────────────
+        function escapeHtml(str) {
+            const div = document.createElement("div");
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatText(text) {
+            // Basic markdown-like formatting
+            let html = escapeHtml(text);
+
+            // Code blocks
+            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            // Bold
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+
+            return html;
+        }
+
+        function findAgentByModel(model) {
+            // Try to match model name to agent
+            const modelMap = {
+                "model-pro": "code-guru",
+                "model-ultra": "bug-hunter",
+                "model-mini": "security-hero",
+                "model-max": "perf-wizard",
+                "model-pickle": "doc-king",
+                "deepseek-v4-flash-free": "code-guru",
+                "mimo-v2.5-free": "bug-hunter",
+                "north-mini-code-free": "security-hero",
+                "nemotron-3-ultra-free": "perf-wizard",
+                "big-pickle": "doc-king",
+            };
+            const agentId = modelMap[model];
+            return agentId ? agents[agentId] : null;
+        }
+
+        // ─── Focus input on load ─────────────────────────────
+        document.getElementById("userInput").focus();
+    </script>
+
+</body>
+
+</html>

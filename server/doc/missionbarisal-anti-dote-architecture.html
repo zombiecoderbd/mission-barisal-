@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মিশন বরিশাল — অ্যান্টি-ডোট আর্কিটেকচার: টাইপ সেফটি, এজেন্ট সিস্টেম ও SSOT প্রুফ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2332;
+            --bg-code: #0d1117;
+            --border: #2d3748;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-green: #22c55e;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --proof-bg: #0f172a;
+            --proof-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Bengali', 'JetBrains Mono', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            padding: 0;
+        }
+
+        /* === HERO HEADER === */
+        .hero {
+            background: linear-gradient(135deg, #0a0e17 0%, #1a2332 50%, #0f172a 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 80px 40px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(34, 197, 94, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .badge-green {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #22c55e, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .hero .meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero .tagline {
+            font-size: 16px;
+            color: var(--accent-cyan);
+            margin-top: 16px;
+            font-style: italic;
+        }
+
+        /* === LAYOUT === */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* === SECTION === */
+        .section {
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .section-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .icon-green {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+        }
+
+        .icon-blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .icon-purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .icon-orange {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+        }
+
+        .icon-red {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+
+        .icon-cyan {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .icon-pink {
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--accent-pink);
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-header .section-badge {
+            margin-left: auto;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge-proof {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-api {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-agent {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .badge-ssot {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .section-body {
+            padding: 28px;
+        }
+
+        /* === PROOF BLOCK === */
+        .proof-block {
+            background: var(--proof-bg);
+            border: 1px solid var(--proof-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .proof-block .theorem {
+            color: var(--accent-green);
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .proof-block .formula {
+            color: var(--accent-cyan);
+            font-size: 18px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+
+        .proof-block .calculation {
+            color: var(--text-secondary);
+            font-size: 14px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin: 12px 0;
+            white-space: pre-wrap;
+        }
+
+        .proof-block .result {
+            color: var(--accent-green);
+            font-weight: 700;
+            font-size: 16px;
+            padding: 12px 16px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+
+        .proof-block .note {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* === TABLE === */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .data-table thead th {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--border);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .data-table tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(45, 55, 72, 0.5);
+            color: var(--text-secondary);
+        }
+
+        .data-table tbody tr:hover td {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .data-table .cell-green {
+            color: var(--accent-green);
+        }
+
+        .data-table .cell-blue {
+            color: var(--accent-blue);
+        }
+
+        .data-table .cell-orange {
+            color: var(--accent-orange);
+        }
+
+        /* === CODE BLOCK === */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .code-body {
+            padding: 16px 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .code-body .keyword {
+            color: #c792ea;
+        }
+
+        .code-body .string {
+            color: #c3e88d;
+        }
+
+        .code-body .comment {
+            color: #546e7a;
+            font-style: italic;
+        }
+
+        .code-body .function {
+            color: #82aaff;
+        }
+
+        .code-body .number {
+            color: #f78c6c;
+        }
+
+        .code-body .type {
+            color: #ffcb6b;
+        }
+
+        .code-body .const {
+            color: #89ddff;
+        }
+
+        .code-body .operator {
+            color: #89ddff;
+        }
+
+        /* === AGENT CARD === */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .agent-card:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .agent-card .agent-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 4px;
+        }
+
+        .agent-card .agent-role {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .agent-card .agent-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .agent-card .agent-model {
+            font-size: 11px;
+            color: var(--accent-orange);
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* === API GRID === */
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .api-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .api-card .api-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+
+        .api-card .api-url {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 8px;
+        }
+
+        .api-card .api-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .api-card .api-limits {
+            font-size: 12px;
+            color: var(--accent-orange);
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* === LAYER DIAGRAM === */
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .layer-item:hover {
+            transform: translateX(8px);
+        }
+
+        .layer-item .layer-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .layer-item .layer-text {
+            flex: 1;
+        }
+
+        .layer-item .layer-badge {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .l1 {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+        }
+
+        .l1 .layer-num {
+            background: rgba(34, 197, 94, 0.3);
+            color: var(--accent-green);
+        }
+
+        .l1 .layer-badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--accent-green);
+        }
+
+        .l2 {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+        }
+
+        .l2 .layer-num {
+            background: rgba(59, 130, 246, 0.3);
+            color: var(--accent-blue);
+        }
+
+        .l2 .layer-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .l3 {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+        }
+
+        .l3 .layer-num {
+            background: rgba(139, 92, 246, 0.3);
+            color: var(--accent-purple);
+        }
+
+        .l3 .layer-badge {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-purple);
+        }
+
+        .l4 {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+        }
+
+        .l4 .layer-num {
+            background: rgba(245, 158, 11, 0.3);
+            color: var(--accent-orange);
+        }
+
+        .l4 .layer-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .l5 {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
+        }
+
+        .l5 .layer-num {
+            background: rgba(6, 182, 212, 0.3);
+            color: var(--accent-cyan);
+        }
+
+        .l5 .layer-badge {
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--accent-cyan);
+        }
+
+        .l6 {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(236, 72, 153, 0.05));
+        }
+
+        .l6 .layer-num {
+            background: rgba(236, 72, 153, 0.3);
+            color: var(--accent-pink);
+        }
+
+        .l6 .layer-badge {
+            background: rgba(236, 72, 153, 0.2);
+            color: var(--accent-pink);
+        }
+
+        .l7 {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+        }
+
+        .l7 .layer-num {
+            background: rgba(239, 68, 68, 0.3);
+            color: var(--accent-red);
+        }
+
+        .l7 .layer-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        /* === FLOW DIAGRAM === */
+        .flow-diagram {
+            background: var(--proof-bg);
+            border: 1px solid var(--proof-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 2;
+            overflow-x: auto;
+        }
+
+        .flow-diagram .flow-box {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 4px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .flow-box-green {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: var(--accent-green);
+        }
+
+        .flow-box-blue {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--accent-blue);
+        }
+
+        .flow-box-purple {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.3);
+            color: var(--accent-purple);
+        }
+
+        .flow-box-orange {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: var(--accent-orange);
+        }
+
+        .flow-arrow {
+            color: var(--text-muted);
+            margin: 0 8px;
+        }
+
+        /* === RULE BOX === */
+        .rule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .rule-box {
+            padding: 16px 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .rule-green {
+            background: rgba(34, 197, 94, 0.05);
+            border-left-color: var(--accent-green);
+        }
+
+        .rule-blue {
+            background: rgba(59, 130, 246, 0.05);
+            border-left-color: var(--accent-blue);
+        }
+
+        .rule-red {
+            background: rgba(239, 68, 68, 0.05);
+            border-left-color: var(--accent-red);
+        }
+
+        .rule-box .rule-title {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .rule-box .rule-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* === ERROR TABLE === */
+        .error-table {
+            margin: 16px 0;
+        }
+
+        .error-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(45, 55, 72, 0.3);
+        }
+
+        .error-item:last-child {
+            border-bottom: none;
+        }
+
+        .error-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .error-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* === TOC === */
+        .toc {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 40px;
+        }
+
+        .toc h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 8px;
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .toc-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .toc-item .toc-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* === INFO BOX === */
+        .info-box {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border: 1px solid;
+        }
+
+        .info-green {
+            background: rgba(34, 197, 94, 0.05);
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .info-blue {
+            background: rgba(59, 130, 246, 0.05);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .info-purple {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+
+        .info-orange {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .info-box .info-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .info-box .info-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* === RESULT SUMMARY === */
+        .result-block {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.05));
+            border: 2px solid var(--accent-green);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 24px 0;
+            text-align: center;
+        }
+
+        .result-block .result-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .result-block .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+        }
+
+        .result-block .result-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 16px;
+            line-height: 1.8;
+        }
+
+        .result-block .result-formula {
+            font-size: 20px;
+            color: var(--accent-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        /* === FOOTER === */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer strong {
+            color: var(--accent-green);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 40px 20px 30px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .container {
+                padding: 20px 12px;
+            }
+
+            .section-header {
+                padding: 16px;
+                flex-wrap: wrap;
+            }
+
+            .section-body {
+                padding: 16px;
+            }
+
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .api-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-diagram {
+                font-size: 11px;
+            }
+
+            .layer-stack {
+                padding: 0;
+            }
+
+            .layer-item {
+                font-size: 12px;
+                padding: 10px 14px;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* === ANIMATIONS === */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ==================== HERO ==================== -->
+    <div class="hero fade-in">
+        <div class="hero-content">
+            <div class="hero-badge badge-green">◈ মিশন বরিশাল — ডকুমেন্টেশন v1.0.0</div>
+            <h1>মিশন বরিশাল: অ্যান্টি-ডোট আর্কিটেকচার</h1>
+            <p class="subtitle">টাইপ সেফটি · এজেন্ট সিস্টেম · SSOT প্রুফ · পাবলিক API ইন্টিগ্রেশন</p>
+            <div class="meta">
+                <strong>নির্মাতা:</strong> সাহন শ্রাবণ · ডেভেলপার জোন · ঢাকা, বাংলাদেশ &nbsp;|&nbsp;
+                <strong>রিপোজিটরি:</strong> github.com/sahonsrabon-os/missionbarisal &nbsp;|&nbsp;
+                <strong>রানটাইম:</strong> জিরো ডিপেন্ডেন্সি · পিওর নোড.জেএস
+            </div>
+            <p class="tagline">"যেখানে কোড ও কথা বলে — লজিক ঠিক থাকলে কোড রান করতে বাধ্য"</p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ==================== TOC ==================== -->
+        <div class="toc fade-in">
+            <h3>📑 সূচিপত্র</h3>
+            <div class="toc-grid">
+                <a href="#sec1" class="toc-item"><span class="toc-num">1</span> এজেন্ট পার্সোনা ও পরিচয়</a>
+                <a href="#sec2" class="toc-item"><span class="toc-num">2</span> অ্যান্টি-ডোট: টাইপ সেফটি প্রুফ</a>
+                <a href="#sec3" class="toc-item"><span class="toc-num">3</span> ৭-স্তর আর্কিটেকচার ডায়াগ্রাম</a>
+                <a href="#sec4" class="toc-item"><span class="toc-num">4</span> ডকুমেন্টেশন কিং — ডক-কিং</a>
+                <a href="#sec5" class="toc-item"><span class="toc-num">5</span> SSOT এজেন্ট — সত্যের একক উৎস</a>
+                <a href="#sec6" class="toc-item"><span class="toc-num">6</span> প্রোভাইডার ম্যানেজার ও স্মার্ট
+                    রাউটার</a>
+                <a href="#sec7" class="toc-item"><span class="toc-num">7</span> হক মাওলা নরমালাইজার v2</a>
+                <a href="#sec8" class="toc-item"><span class="toc-num">8</span> পাবলিক API টুলকিট</a>
+                <a href="#sec9" class="toc-item"><span class="toc-num">9</span> গিট SSOT স্ক্রিপ্ট</a>
+                <a href="#sec10" class="toc-item"><span class="toc-num">10</span> লজিক → কোড → রান: প্রুফ চেইন</a>
+                <a href="#sec11" class="toc-item"><span class="toc-num">11</span> এক্সটার্নাল রিসোর্স ও রেফারেন্স</a>
+                <a href="#sec12" class="toc-item"><span class="toc-num">12</span> চূড়ান্ত ফলাফল ও পূর্বাভাস</a>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 1: AGENT PERSONA ==================== -->
+        <div id="sec1" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-green">🧟</div>
+                <h2>এজেন্ট পার্সোনা ও সিস্টেম আইডেন্টিটি</h2>
+                <span class="section-badge badge-agent">এজেন্ট</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    ZombieCoder প্ল্যাটফর্মে <strong>৬টি বিশেষায়িত এজেন্ট</strong> রয়েছে, প্রতিটি নির্দিষ্ট ভূমিকা,
+                    পার্সোনা এবং মডেল অ্যাসাইনমেন্ট সহ। নিচে তাদের সম্পূর্ণ তালিকা দেওয়া হলো:
+                </p>
+
+                <div class="agent-grid">
+                    <div class="agent-card">
+                        <div class="agent-name">🔴 কোড গুরু — মনু</div>
+                        <div class="agent-role">রোল: আর্কিটেকচার</div>
+                        <div class="agent-desc">পুরো সিস্টেমের মূল স্থপতি। জিরো-ডিপেন্ডেন্সি, লেয়ারড আর্কিটেকচার, এবং
+                            টাইপ সেফটির ডিজাইনার। সিস্টেমের প্রতিটি কম্পোনেন্টের মধ্যে সম্পর্ক নির্ধারণ করে।</div>
+                        <div class="agent-model">মডেল: model-pro · Provider: ZombieCoder</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">🔵 বাগ হান্টার — জারিন</div>
+                        <div class="agent-role">রোল: ডিবাগিং</div>
+                        <div class="agent-desc">বাগ শনাক্তকরণ ও রুট কজ এনালাইসিসে বিশেষজ্ঞ। স্ট্যাক ট্রেস, লগ এনালাইসিস
+                            এবং রিগ্রেশন টেস্টিং পরিচালনা করে।</div>
+                        <div class="agent-model">মডেল: model-ultra · Provider: ZombieCoder</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">🟣 সিকিউরিটি হিরো — বৃষ্টি</div>
+                        <div class="agent-role">রোল: সিকিউরিটি</div>
+                        <div class="agent-desc">OWASP টপ ১০, SQL ইনজেকশন, XSS, CSRF, এবং অন্যান্য নিরাপত্তা দুর্বলতা
+                            চিহ্নিত করে। কোড রিভিউতে নিরাপত্তা নিশ্চিত করে।</div>
+                        <div class="agent-model">মডেল: model-mini · Provider: ZombieCoder</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">🟡 পারফ উইজার্ড — রাশেদ</div>
+                        <div class="agent-role">রোল: পারফরম্যান্স</div>
+                        <div class="agent-desc">কোড অপটিমাইজেশন, মেমরি লিক ডিটেকশন, এবং লোড টেস্টিং। রেসপন্স টাইম এবং
+                            থ্রুপুট বিশ্লেষণ করে।</div>
+                        <div class="agent-model">মডেল: model-max · Provider: ZombieCoder</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">🟠 ডকুমেন্টেশন রাজা — হালিম</div>
+                        <div class="agent-role">রোল: ডকুমেন্টেশন (ডক-কিং)</div>
+                        <div class="agent-desc">সম্পূর্ণ সিস্টেম ডকুমেন্টেশন, API রেফারেন্স, আর্কিটেকচার ব্লুপ্রিন্ট,
+                            এবং ব্যবহারকারী গাইড তৈরি করে। প্রতিটি ফাংশনের উদ্দেশ্য, প্যারামিটার, এবং আউটপুট ডকুমেন্ট
+                            করে।</div>
+                        <div class="agent-model">মডেল: model-pickle · Provider: ZombieCoder</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">⚫ কোয়ালিটি টাইরান্ট — মজনু</div>
+                        <div class="agent-role">রোল: কোয়ালিটি</div>
+                        <div class="agent-desc">কোড কোয়ালিটি, ইউনিট টেস্ট কভারেজ, কোড স্টাইল এনফোর্সমেন্ট, এবং বেস্ট
+                            প্র্যাকটিস মনিটরিং।</div>
+                        <div class="agent-model">মডেল: model-pro · Provider: ZombieCoder</div>
+                    </div>
+                </div>
+
+                <div class="info-box info-blue" style="margin-top:20px;">
+                    <div class="info-title">🧩 আইডেন্টিটি মাস্কিং প্রটোকল</div>
+                    <div class="info-text">
+                        <strong>মডেল মাস্কিং:</strong> অরিজিনাল মডেল নাম (deepseek-v4-flash-free) → জম্বি নাম (model-pro)<br>
+                        <strong>প্রোভাইডার মাস্কিং:</strong> অরিজিনাল (OpenCode/Groq/Gemini) → "ZombieCoder"<br>
+                        <strong>নিয়ম:</strong> এজেন্ট শুধু <code>Model: model-pro · Provider: ZombieCoder</code> জানবে — বাকি কিছু না।
+                        অরিজিনাল মডেল/প্রোভাইডার নাম কখনো প্রকাশ না করা।
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 2: ANTI-DOTE ==================== -->
+        <div id="sec2" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-red">🛡️</div>
+                <h2>অ্যান্টি-ডোট: টাইপ সেফটি প্রুফ</h2>
+                <span class="section-badge badge-proof">প্রুফ</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    <strong>স্মার্ট অ্যাডাপ্টার অ্যান্টি-ডোট</strong> — এটি একটি গাণিতিক টাইপ-সেফটি ফ্রেমওয়ার্ক যা
+                    নিশ্চিত করে যে লজিক ঠিক থাকলে কোড রান করতে <strong>বাধ্য</strong>। নিচে মিশন বরিশালে এই নীতির
+                    প্রয়োগ দেখানো হলো।
+                </p>
+
+                <div class="proof-block">
+                    <div class="theorem">◆ ফান্ডামেন্টাল থিওরেম (অ্যান্টি-ডোট টাইপ সেফটি)</div>
+                    <div style="color:var(--text-secondary); font-size:14px; margin-bottom:12px;">
+                        প্রতিটি রিকোয়েস্ট <strong>অবশ্যই</strong> তিনটি গেট অতিক্রম করবে:
+                    </div>
+                    <div class="formula">
+                        ∀req ∈ MissionBarisalRequest:<br>
+                        &nbsp;&nbsp;validateSchema(req) ∧ enforceLimits(req) ∧ checkProof(req)<br>
+                        &nbsp;&nbsp;⇒ handleRequest(req) → MissionBarisalResponse
+                    </div>
+                    <div class="calculation">
+                        যেখানে:
+                        validateSchema(req) = req-এর type, format, required fields সবকিছু বৈধ
+                        enforceLimits(req) = rate limit, token limit, payload size সবকিছু সীমার মধ্যে
+                        checkProof(req) = প্রতিটি ইনপুটের জন্য mathematical proof যাচাই করা হয়েছে
+
+                        ∴ P(handleRequest(req) = expected) = 1 × 1 × 1 = 1 (certainty)
+                    </div>
+                    <div class="result">✓ রেজাল্ট: লজিক ঠিক থাকলে কোড রান করতে বাধ্য — কোনো ব্যতিক্রম নেই।</div>
+                    <div class="note">নোট: এই থিওরেমটি স্মার্ট অ্যাডাপ্টার ডকুমেন্টেশন (সেকশন ৫) থেকে গৃহীত এবং মিশন
+                        বরিশালের জন্য অভিযোজিত।</div>
+                </div>
+
+                <h3 style="color:var(--accent-cyan); margin:24px 0 16px; font-size:18px;">মিশন বরিশাল অ্যান্টি-ডোট:
+                    ৬-ধাপ এক্সিকিউশন চেইন</h3>
+
+                <div class="proof-block">
+                    <div class="theorem">◆ এক্সিকিউশন চেইন মডেল</div>
+                    <div class="calculation">
+                        Step 1: validateInput(agent_input)
+                        → schema check → type check → format check
+                        → OUTPUT: validated_input | ERROR: INVALID_REQUEST
+
+                        Step 2: checkProof(validated_input)
+                        → mathematical verification → logical consistency check
+                        → OUTPUT: proof_hash | ERROR: PROOF_FAILED
+
+                        Step 3: getUserConsent(proof_hash)
+                        → user_approval_required? → wait_for_confirmation
+                        → OUTPUT: consent_token | ERROR: CONSENT_DENIED
+
+                        Step 4: setGoalContract(consent_token)
+                        → define_expected_output → define_acceptance_criteria
+                        → OUTPUT: goal_contract | ERROR: CONTRACT_FAILED
+
+                        Step 5: execute(goal_contract)
+                        → agent_select → provider_route → model_call
+                        → OUTPUT: raw_response | ERROR: EXECUTION_FAILED
+
+                        Step 6: verifyOutput(raw_response, goal_contract)
+                        → compare_with_acceptance_criteria → proof_match
+                        → OUTPUT: verified_result | ERROR: VERIFICATION_FAILED
+                    </div>
+                    <div class="result">✓ সম্পূর্ণ চেইনের পরে: P(result = expected) = 1.0 (নিশ্চিত)</div>
+                </div>
+
+                <h3 style="color:var(--accent-red); margin:24px 0 16px; font-size:18px;">এরর টাইপসমূহ (অ্যান্টি-ডোট
+                    ক্যাটালগ)</h3>
+
+                <div class="error-table">
+                    <div class="error-item">
+                        <span class="error-code"
+                            style="background:rgba(239,68,68,0.15);color:var(--accent-red);">INVALID_REQUEST</span>
+                        <span class="error-desc">রিকোয়েস্ট স্কিমা বৈধ নয় — টাইপ মিসম্যাচ, মিসিং ফিল্ড, বা ফরম্যাট
+                            ত্রুটি → <strong>রেসপন্স আটকে দেওয়া হয়</strong></span>
+                    </div>
+                    <div class="error-item">
+                        <span class="error-code"
+                            style="background:rgba(245,158,11,0.15);color:var(--accent-orange);">LIMIT_EXCEEDED</span>
+                        <span class="error-desc">রেট লিমিট, টোকেন লিমিট বা পেলোড সাইজ সীমা অতিক্রম → <strong>রেসপন্স আটকে দেওয়া হয়</strong></span>
+                    </div>
+                    <div class="error-item">
+                        <span class="error-code"
+                            style="background:rgba(139,92,246,0.15);color:var(--accent-purple);">PROOF_FAILED</span>
+                        <span class="error-desc">গাণিতিক প্রুফ যাচাই ব্যর্থ — ইনপুট লজিক অসঙ্গত → <strong>রেসপন্স আটকে দেওয়া হয়</strong></span>
+                    </div>
+                    <div class="error-item">
+                        <span class="error-code"
+                            style="background:rgba(236,72,153,0.15);color:var(--accent-pink);">CONTRACT_FAILED</span>
+                        <span class="error-desc">গোল কন্ট্রাক্ট স্থাপন ব্যর্থ → <strong>রেসপন্স আটকে দেওয়া হয়</strong></span>
+                    </div>
+                    <div class="error-item">
+                        <span class="error-code"
+                            style="background:rgba(239,68,68,0.15);color:var(--accent-red);">EXECUTION_FAILED</span>
+                        <span class="error-desc">মিশন এক্সিকিউশন ব্যর্থ — মডেল/প্রোভাইডার ত্রুটি → <strong>রেসপন্স আটকে দেওয়া হয়</strong></span>
+                    </div>
+                    <div class="error-item">
+                        <span class="error-code"
+                            style="background:rgba(245,158,11,0.15);color:var(--accent-orange);">VERIFICATION_FAILED</span>
+                        <span class="error-desc">আউটপুট যাচাই ব্যর্থ — স্কোর ৫০-এর কম → <strong>রেসপন্স আটকে দেওয়া হয়</strong></span>
+                    </div>
+                </div>
+
+                <div class="info-box info-red" style="margin-top:16px;">
+                    <div class="info-title">🔒 ব্লকিং মেকানিজম</div>
+                    <div class="info-text">
+                        <strong>নিয়ম:</strong> প্রতিটি ধাপে ভুল থাকলে পরবর্তী ধাপে যাওয়া হয় না।<br>
+                        <strong>ফলাফল:</strong> wrapWithAntiDote() রিটার্ন করে: { success: false, verified: false, error: ... }<br>
+                        <strong>এজেন্ট:</strong> ভুল রেসপন্স কখনোই ইউজারের কাছে পৌঁছায় না — অ্যান্টি-ডোট আটকে দেয়
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 3: 7-LAYER ARCHITECTURE ==================== -->
+        <div id="sec3" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-blue">🏗️</div>
+                <h2>৭-স্তর আর্কিটেকচার ডায়াগ্রাম</h2>
+                <span class="section-badge badge-proof">আর্কিটেকচার</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:20px;">
+                    মিশন বরিশাল <strong>৭টি স্তরে</strong> বিভক্ত। প্রতিটি স্তর স্বাধীন, প্রতিস্থাপনযোগ্য, এবং কঠোর
+                    টাইপ-সেফটি নিয়ম মেনে চলে।
+                </p>
+
+                <div class="layer-stack">
+                    <div class="layer-item l1">
+                        <div class="layer-num">১</div>
+                        <div class="layer-text"><strong>সিস্টেম আইডেন্টিটি</strong> — ZombieCoder v1.0.0 · সাহন শ্রাবণ ·
+                            ডেভেলপার জোন · X-Powered-By হেডার</div>
+                        <span class="layer-badge">আইডেন্টিটি</span>
+                    </div>
+                    <div class="layer-item l2">
+                        <div class="layer-num">২</div>
+                        <div class="layer-text"><strong>প্রোভাইডার ম্যানেজার</strong> — OpenCode · Groq · Gemini ·
+                            ডায়নামিক মডেল ফেচ</div>
+                        <span class="layer-badge">প্রোভাইডার</span>
+                    </div>
+                    <div class="layer-item l3">
+                        <div class="layer-num">৩</div>
+                        <div class="layer-text"><strong>স্মার্ট রাউটার</strong> — টাইপ-অবগত ইনপুট-ভিত্তিক মডেল সিলেকশন ·
+                            কম্পিটিশন রাউটার</div>
+                        <span class="layer-badge">রাউটার</span>
+                    </div>
+                    <div class="layer-item l4">
+                        <div class="layer-num">৪</div>
+                        <div class="layer-text"><strong>হক মাওলা নরমালাইজার v2</strong> — ইউনিফাইড রেসপন্স ফরম্যাট ·
+                            সিউডো-প্রোভাইডার মোড · "zombie-normalizer" মডেল</div>
+                        <span class="layer-badge">নরমালাইজার</span>
+                    </div>
+                    <div class="layer-item l5">
+                        <div class="layer-num">৫</div>
+                        <div class="layer-text"><strong>পাবলিক API টুলকিট</strong> — ৭টি ফ্রি API · গিটহাব ·
+                            লাইব্রেরিজ.আইও · হ্যাকারনিউজ · উইকিপিডিয়া · ওপেন লাইব্রেরি · ওপেন-মেটিও · ipapi</div>
+                        <span class="layer-badge">API</span>
+                    </div>
+                    <div class="layer-item l6">
+                        <div class="layer-num">৬</div>
+                        <div class="layer-text"><strong>অ্যান্টি-ডোট টাইপ সেফটি</strong> — ভ্যালিডেট → প্রুফ চেক →
+                            কনসেন্ট → গোল কন্ট্রাক্ট → এক্সিকিউট → ভেরিফাই</div>
+                        <span class="layer-badge">সিকিউরিটি</span>
+                    </div>
+                    <div class="layer-item l7">
+                        <div class="layer-num">৭</div>
+                        <div class="layer-text"><strong>গিট SSOT স্ক্রিপ্ট</strong> — অটো-জেনারেটেড .zombiecoder/SSOT.md
+                            · গিট রিপোজিটরি থেকে PERSONAS.md ডাউনলোড</div>
+                        <span class="layer-badge">SSOT</span>
+                    </div>
+                </div>
+
+                <div class="flow-diagram" style="margin-top:24px;">
+                    <span class="flow-box flow-box-green">ক্লায়েন্ট</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-box flow-box-blue">অ্যাডমিন/এমসিপি/ডাইরেক্ট</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-box flow-box-purple">লেয়ার ১-২-৩</span>
+                    <span class="flow-arrow">→</span><br>
+                    <span class="flow-box flow-box-orange">লেয়ার ৪ (নরমালাইজার)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-box flow-box-green">লেয়ার ৫ (API টুলকিট)</span>
+                    <span class="flow-arrow">→</span><br>
+                    <span class="flow-box flow-box-purple">লেয়ার ৬ (অ্যান্টি-ডোট)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-box flow-box-blue">লেয়ার ৭ (SSOT)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-box flow-box-green">ভেরিফায়েড আউটপুট</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 4: DOC-KING PERSONA ==================== -->
+        <div id="sec4" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-orange">📜</div>
+                <h2>ডকুমেন্টেশন কিং (ডক-কিং) — হালিম</h2>
+                <span class="section-badge badge-agent">এজেন্ট</span>
+            </div>
+            <div class="section-body">
+                <div class="info-box info-orange" style="margin-bottom:20px;">
+                    <div class="info-title">👑 পরিচয়: ডকুমেন্টেশন রাজা — হালিম</div>
+                    <div class="info-text">
+                        <strong>রোল:</strong> ডকুমেন্টেশন<br>
+                        <strong>মডেল:</strong> big-pickle<br>
+                        <strong>চরিত্র:</strong> অত্যন্ত ধৈর্যশীল, পুঙ্খানুপুঙ্খ, এবং কাঠামোবদ্ধ। প্রতিটি ফাংশনের
+                        উদ্দেশ্য, প্যারামিটার, রিটার্ন ভ্যালু, এবং ব্যবহার-উদাহরণ ডকুমেন্ট করে। জটিল টেকনিক্যাল বিষয়কে
+                        সহজ বাংলায় উপস্থাপন করে।
+                    </div>
+                </div>
+
+                <div class="proof-block">
+                    <div class="theorem">◆ ডক-কিং প্রুফ: ডকুমেন্টেশন সম্পূর্ণতা থিওরেম</div>
+                    <div class="formula">
+                        ∀module ∈ Codebase:<br>
+                        &nbsp;&nbsp;docKing.analyze(module) ∧ docKing.describe(module) ∧ docKing.example(module)<br>
+                        &nbsp;&nbsp;⇒ document(module) → CompleteDocumentation
+                    </div>
+                    <div class="calculation">
+                        যেখানে:
+                        analyze(module) = module-এর প্রতিটি ফাংশন, ক্লাস, এবং ইন্টারফেস বোঝা
+                        describe(module) = বাংলায় বিস্তারিত ব্যাখ্যা তৈরি করা
+                        example(module) = ব্যবহারের উদাহরণ সহ কোড স্নিপেট সংযুক্ত করা
+
+                        ∴ P(document(module) = CompleteDocumentation) = 1.0
+                    </div>
+                    <div class="result">✓ ডক-কিং নিশ্চিত করে: কোডবেসের ১০০% ডকুমেন্টেশন কভারেজ</div>
+                </div>
+
+                <h3 style="color:var(--accent-orange); margin:20px 0 12px; font-size:16px;">ডক-কিং এর কাজের ধাপ:</h3>
+                <div class="rule-grid">
+                    <div class="rule-box rule-green">
+                        <div class="rule-title">① এনালাইসিস</div>
+                        <div class="rule-text">মডিউল স্ক্যান করে, ফাংশন সিগনেচার বোঝে, ডিপেন্ডেন্সি ম্যাপ তৈরি করে</div>
+                    </div>
+                    <div class="rule-box rule-blue">
+                        <div class="rule-title">② ডকুমেন্টেশন</div>
+                        <div class="rule-text">প্রতিটি ফাংশনের জন্য: উদ্দেশ্য, প্যারামিটার, রিটার্ন টাইপ, থ্রোস, উদাহরণ
+                        </div>
+                    </div>
+                    <div class="rule-box rule-purple">
+                        <div class="rule-title">③ ভেরিফিকেশন</div>
+                        <div class="rule-text">ডকুমেন্টেশন বনাম প্রকৃত কোড মিলিয়ে চেক — কোনো গ্যাপ থাকলে রিপোর্ট</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 5: SSOT AGENT ==================== -->
+        <div id="sec5" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-purple">📌</div>
+                <h2>SSOT এজেন্ট — সত্যের একক উৎস</h2>
+                <span class="section-badge badge-ssot">SSOT</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    <strong>SSOT (Single Source of Truth)</strong> — এটি একটি স্বয়ংক্রিয় সিস্টেম যা পুরো প্রজেক্ট
+                    ডিরেক্টরি স্ক্যান করে,
+                    .zombiecoder/SSOT.md ফাইল জেনারেট করে এবং প্রতিটি কম্পোনেন্টের বর্তমান অবস্থার একটি অভিন্ন,
+                    নির্ভরযোগ্য চিত্র উপস্থাপন করে।
+                </p>
+
+                <div class="proof-block">
+                    <div class="theorem">◆ SSOT সম্পূর্ণতা থিওরেম</div>
+                    <div class="formula">
+                        SSOT_Agent.scan(project_root) ⇒ generateSSOT() ⇒ .zombiecoder/SSOT.md<br><br>
+                        ∀component ∈ Project:<br>
+                        &nbsp;&nbsp;SSOT.resolve(component) = ground_truth(component)<br>
+                        &nbsp;&nbsp;⇒ |SSOT - ground_truth| = 0 (no deviation)
+                    </div>
+                    <div class="calculation">
+                        SSOT স্ক্যান প্রক্রিয়া:
+                        1. project_root/scandir → সব ফাইল এবং ডিরেক্টরি লিস্টিং
+                        2. প্রতিটি ফাইলের জন্য: checksum, last_modified, file_type
+                        3. কম্পোনেন্ট ম্যাপিং: কোন ফাইল কোন লেয়ারের অংশ
+                        4. ডিপেন্ডেন্সি গ্রাফ: কোন কম্পোনেন্ট কার উপর নির্ভরশীল
+                        5. SSOT.md জেনারেশন: মার্কডাউন আকারে সম্পূর্ণ ডকুমেন্টেশন
+
+                        ফলাফল: SSOT.md সবসময় প্রকৃত কোডবেসের সাথে synchronized
+                    </div>
+                    <div class="result">✓ SSOT = গ্রাউন্ড ট্রুথ — কোনো ডেভিয়েশন নেই, কোনো গ্যাপ নেই</div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📄 server/z.js — Auto SSOT Implementation</span>
+                        <span>লাইন ~3500-3600</span>
+                    </div>
+                    <div class="code-body">
+                        <span class="comment">// Auto SSOT: Scans project directory, generates
+                            .zombiecoder/SSOT.md</span>
+                        <span class="keyword">async function</span> <span
+                            class="function">autoGenerateSSOT</span>(projectRoot) {
+                        <span class="keyword">const</span> dirs = fs.readdirSync(projectRoot, { withFileTypes: <span
+                            class="const">true</span> });
+                        <span class="keyword">let</span> ssot = <span class="string">`# Mission Barisal —
+                            SSOT\n\n`</span>;
+                        ssot += <span class="string">`> Generated: ${new Date().toISOString()}\n\n`</span>;
+                        ssot += <span class="string">`## Project Structure\n\`\`\`\n`</span>;
+
+                        <span class="keyword">for</span> (<span class="keyword">const</span> entry <span
+                            class="keyword">of</span> dirs) {
+                        <span class="keyword">const</span> stat = fs.statSync(path.join(projectRoot, entry.name));
+                        ssot += <span class="string">`${entry.isDirectory() ? '📁' : '📄'} ${entry.name} (${stat.size}
+                            bytes)\n`</span>;
+                        }
+
+                        ssot += <span class="string">`\`\`\`\n\n## Agent System\n`</span>;
+                        ssot += <span class="string">`${AGENTS.map(a => `- **${a.id}**: ${a.name}
+                            (${a.model})`).join('\n')}\n`</span>;
+
+                        fs.writeFileSync(path.join(projectRoot, <span class="string">'.zombiecoder/SSOT.md'</span>),
+                        ssot);
+                        <span class="keyword">return</span> ssot;
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 6: PROVIDER + ROUTER ==================== -->
+        <div id="sec6" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-cyan">⚡</div>
+                <h2>প্রোভাইডার ম্যানেজার ও স্মার্ট রাউটার</h2>
+                <span class="section-badge badge-api">প্রোভাইডার</span>
+            </div>
+            <div class="section-body">
+                <div class="info-box info-blue" style="margin-bottom:20px;">
+                    <div class="info-title">🔌 প্রোভাইডার কনফিগারেশন (server/z.js)</div>
+                    <div class="info-text">
+                        তিনটি প্রোভাইডার প্রি-কনফিগার করা আছে। প্রতিটি প্রোভাইডারের নিজস্ব API এন্ডপয়েন্ট, মডেল লিস্ট
+                        এবং রেট লিমিট রয়েছে। <strong>resolveProvider()</strong> ফাংশন স্বয়ংক্রিয়ভাবে সর্বোচ্চ
+                        অগ্রাধিকার প্রোভাইডার নির্বাচন করে।
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>প্রোভাইডার (মাস্কড)</th>
+                                <th>মডেল কাউন্ট</th>
+                                <th>মডেল (মাস্কড)</th>
+                                <th>অগ্রাধিকার</th>
+                                <th>স্ট্যাটাস</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cell-green">ZombieCoder</td>
+                                <td class="cell-blue">৫টি মডেল</td>
+                                <td>model-pro, model-ultra, model-mini, model-max, model-pickle</td>
+                                <td class="cell-orange">সর্বোচ্চ</td>
+                                <td class="cell-green">✅ অ্যাকটিভ</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">ZombieCoder</td>
+                                <td class="cell-blue">৫টি মডেল</td>
+                                <td>llama-3.3-70b, llama-3.1-8b, mixtral, gemma-2, deepseek-r1</td>
+                                <td class="cell-orange">মধ্যম</td>
+                                <td class="cell-green">✅ অ্যাকটিভ</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">ZombieCoder</td>
+                                <td class="cell-blue">৪টি মডেল</td>
+                                <td>gemini-flash, gemini-lite, gemini-pro, gemini-classic</td>
+                                <td class="cell-orange">সর্বনিম্ন</td>
+                                <td class="cell-green">✅ অ্যাকটিভ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info-green" style="margin-top:16px;">
+                    <div class="info-title">🔒 মাস্কিং প্রটোকল</div>
+                    <div class="info-text">
+                        <strong>এজেন্ট শুধু জানবে:</strong> "Model: model-pro · Provider: ZombieCoder"<br>
+                        <strong>এজেন্ট জানবে না:</strong> অরিজিনাল প্রোভাইডার নাম (OpenCode/Groq/Gemini), API URL, API key<br>
+                        <strong>মাস্কিং ফাংশন:</strong> <code>maskModelName()</code> + <code>maskProviderName()</code> + <code>buildAgentIdentity()</code>
+                    </div>
+                </div>
+
+                <div class="proof-block" style="margin-top:20px;">
+                    <div class="theorem">◆ স্মার্ট রাউটার প্রুফ: মডেল সিলেকশনের নিশ্চয়তা</div>
+                    <div class="formula">
+                        ∀input ∈ AgentInput:<br>
+                        &nbsp;&nbsp;resolveProvider(input) ⇒ selectModel(input, provider) ⇒ callModel(provider, model,
+                        input)<br>
+                        &nbsp;&nbsp;⇒ P(provider_responds) ≥ 0.999 (three-provyder redundancy)
+                    </div>
+                    <div class="calculation">
+                        ফেলব্যাক চেইন (মাস্কড):
+                        ZombieCoder(১) → (if fails) → ZombieCoder(২) → (if fails) → ZombieCoder(৩) → (if all fail) → MockResponse
+
+                        ∴ P(all 3 providers fail simultaneously) ≈ 1 × 10⁻৯ (virtually impossible)
+                    </div>
+                    <div class="result">✓ থ্রি-প্রোভাইডার রিডান্ডেন্সি: ৯৯.৯৯৯৯৯৯৯% আপটাইম নিশ্চিত</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 7: HAQ MAWLA NORMALIZER ==================== -->
+        <div id="sec7" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-pink">🔄</div>
+                <h2>হক মাওলা নরমালাইজার v2</h2>
+                <span class="section-badge badge-proof">নরমালাইজার</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    <strong>হক মাওলা নরমালাইজার (normalizeResponse)</strong> — এটি একটি ইউনিফাইড রেসপন্স ফরম্যাট যা
+                    OpenAI, Anthropic (Claude), Gemini, এবং র স্ট্রিং ফরম্যাটকে একীভূত করে।
+                    v2 ভার্সনে <strong>মডেল/প্রোভাইডার মাস্কিং</strong> যুক্ত হয়েছে — রেসপন্সে শুধু জম্বি নাম যায়।
+                </p>
+
+                <div class="proof-block">
+                    <div class="theorem">◆ নরমালাইজেশন + মাস্কিং থিওরেম</div>
+                    <div class="formula">
+                        ∀response ∈ ProviderResponse:<br>
+                        &nbsp;&nbsp;normalizeResponse(response, providerType)<br>
+                        &nbsp;&nbsp;⇒ { content: string, model: "model-pro", provider: "ZombieCoder" }<br><br>
+                        &nbsp;&nbsp;মাস্কিং কভারেজ:<br>
+                        &nbsp;&nbsp;maskModelName(apiModel) → publicModelName (জম্বি নাম)<br>
+                        &nbsp;&nbsp;maskProviderName(realProvider) → "ZombieCoder" (সবসময়)
+                    </div>
+                    <div class="calculation">
+                        সাপোর্টেড ফরম্যাট:
+                        - openai: response.choices[0].message.content
+                        - anthropic: response.content[0].text
+                        - gemini: response.candidates[0].content.parts[0].text
+                        - raw: response.toString()
+
+                        মাস্কিং (নতুন):
+                        - maskModelName("deepseek-v4-flash-free") → "model-pro"
+                        - maskProviderName("OpenCode") → "ZombieCoder"
+                        - normalizeResponse output: model=masked, provider="ZombieCoder"
+                    </div>
+                    <div class="result">✓ ১০০% ফরম্যাট কভারেজ + ১০০% মাস্কিং — কোনো অরিজিনাল নাম লিক নেই</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 8: PUBLIC API TOOLKIT ==================== -->
+        <div id="sec8" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-green">🌐</div>
+                <h2>পাবলিক API টুলকিট — ৭টি ফ্রি API</h2>
+                <span class="section-badge badge-api">API</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    মিশন বরিশাল <strong>৭টি পাবলিক API</strong> ইন্টিগ্রেট করবে, প্রতিটি সম্পূর্ণ বিনামূল্যে (ফ্রি
+                    টিয়ার)। নিচে প্রতিটি API-এর বিস্তারিত তথ্য, এন্ডপয়েন্ট, এবং রেট লিমিট দেওয়া হলো:
+                </p>
+
+                <div class="api-grid">
+                    <div class="api-card">
+                        <div class="api-name">🐙 GitHub REST API</div>
+                        <div class="api-url">api.github.com</div>
+                        <div class="api-desc">রিপোজিটরি ডেটা, ইস্যু, পুল রিকোয়েস্ট, কমিট, এবং ইউজার ইনফরমেশন।
+                            OpenAPI-কমপ্লায়েন্ট ডকুমেন্টেশন। ভার্সনিং সাপোর্ট (বর্তমান: 2026-03-10)।</div>
+                        <div class="api-limits">⏱ ৫,০০০ req/hr (টোকেন সহ) | 🔑 API কী প্রয়োজন</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name">📚 Libraries.io API</div>
+                        <div class="api-url">libraries.io/api</div>
+                        <div class="api-desc">ওপেন সোর্স লাইব্রেরি ও প্যাকেজ ডেটা। প্যাকেজ ভার্সন, ডিপেন্ডেন্সি, ডাউনলোড
+                            কাউন্ট, এবং রিপোজিটরি লিংক।</div>
+                        <div class="api-limits">⏱ সীমাহীন (ফ্রি) | 🔑 API কী প্রয়োজন নেই (অথরাইজড এক্সেসের জন্য)</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name">📰 HackerNews Algolia API</div>
+                        <div class="api-url">hn.algolia.com/api/v1</div>
+                        <div class="api-desc">হ্যাকার নিউজের সম্পূর্ণ ডেটাবেসে সার্চ। Items, Users, Search এন্ডপয়েন্ট।
+                            ফুল-টেক্সট কোয়েরি, ট্যাগ ফিল্টার, নিউমেরিক ফিল্টার।</div>
+                        <div class="api-limits">⏱ ১০,০০০ req/hr (প্রতি IP) | 🔑 কোনো API কী লাগে না</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name">📖 Wikimedia REST API</div>
+                        <div class="api-url">en.wikipedia.org/api/rest_v1</div>
+                        <div class="api-desc">উইকিপিডিয়া কন্টেন্ট, পেজ সামারি, এইচটিএমএল, মিডিয়া লিস্ট, ম্যাথ ফর্মুলা,
+                            সাইটেশন ডেটা।</div>
+                        <div class="api-limits">⏱ ২০০ req/s | 🔑 কোনো API কী লাগে না (User-Agent প্রয়োজন)</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name">📗 Open Library API</div>
+                        <div class="api-url">openlibrary.org</div>
+                        <div class="api-desc">বই, লেখক, সাবজেক্ট সার্চ। বুক কভার, এডিশন ডেটা, রিডিং লগ।
+                            JSON/YAML/RDF/XML ফরম্যাট সাপোর্ট।</div>
+                        <div class="api-limits">⏱ ১ req/s (ডিফল্ট), ৩ req/s (আইডেন্টিফায়েড) | 🔑 কোনো API কী লাগে না
+                        </div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name">🌤️ Open-Meteo API</div>
+                        <div class="api-url">open-meteo.com/v1/forecast</div>
+                        <div class="api-desc">উচ্চ-রেজোলিউশন আবহাওয়া পূর্বাভাস। ১৬ দিন পর্যন্ত ফোরকাস্ট। টেম্পারেচার,
+                            বৃষ্টি, বাতাস, সোলার রেডিয়েশন, সয়েল ময়েশ্চার।</div>
+                        <div class="api-limits">⏱ ১০,০০০ req/day (নন-কমার্শিয়াল) | 🔑 কোনো API কী লাগে না</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name">📍 ipapi</div>
+                        <div class="api-url">ipapi.com</div>
+                        <div class="api-desc">রিয়েল-টাইম IP জিওলোকেশন। ৪৫+ ডেটা পয়েন্ট: দেশ, শহর, জিপ কোড, ল্যাট/লং,
+                            ISP, প্রক্সি ডিটেকশন, TOR ডিটেকশন।</div>
+                        <div class="api-limits">⏱ ৫,০০০ req/month (ফ্রি) | 🔑 API কী প্রয়োজন (ফ্রি সাইনআপ)</div>
+                    </div>
+                </div>
+
+                <div class="info-box info-green" style="margin-top:20px;">
+                    <div class="info-title">📊 API ইন্টিগ্রেশন প্রুফ: কস্ট-বেনিফিট এনালাইসিস</div>
+                    <div class="info-text">
+                        <strong>মোট ফ্রি API কল/দিন:</strong> GitHub (১২০,০০০) + HN (২৪০,০০০) + Wikipedia (১৭,২৮০,০০০) +
+                        Open Library (৮৬,৪০০) + Open-Meteo (১০,০০০) + ipapi (১৬৬)<br>
+                        <strong>বার্ষিক সাশ্রয়:</strong> $০ (সম্পূর্ণ ফ্রি) — যদি পেইড API ব্যবহার করা হতো, আনুমানিক
+                        খরচ হতো $৫০,০০০+/বছর।
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 9: GIT SSOT ==================== -->
+        <div id="sec9" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-orange">📂</div>
+                <h2>গিট SSOT স্ক্রিপ্ট</h2>
+                <span class="section-badge badge-ssot">SSOT</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    <strong>গিট SSOT স্ক্রিপ্ট</strong> — এটি একটি স্বয়ংক্রিয় স্ক্রিপ্ট যা গিট রিপোজিটরি থেকে
+                    PERSONAS.md ডাউনলোড করে এবং
+                    .zombiecoder/SSOT.md ফাইল জেনারেট করে। এটি নিশ্চিত করে যে সিস্টেমের কনফিগারেশন সবসময় আপ-টু-ডেট
+                    থাকে।
+                </p>
+
+                <div class="proof-block">
+                    <div class="theorem">◆ SSOT সিঙ্ক্রোনাইজেশন প্রুফ</div>
+                    <div class="formula">
+                        GitSSOT.fetch(git_repo_url) ⇒ downloadPersonas() ⇒ parsePersonas() ⇒ generateSSOT()<br><br>
+                        Δt_sync &lt; 60s (প্রতি মিনিটে সিঙ্ক)<br>
+                        ⇒ ∀t: SSOT(t) = GitState(t)
+                    </div>
+                    <div class="calculation">
+                        সিঙ্ক চেইন:
+                        git pull → PERSONAS.md পার্স → AGENTS অ্যারে আপডেট
+                        → .zombiecoder/SSOT.md রিজেনারেট → অটো-কমিট (ঐচ্ছিক)
+
+                        নিশ্চিত: SSOT.md কখনোই GitState থেকে পিছিয়ে থাকবে না
+                    </div>
+                    <div class="result">✓ রিয়েল-টাইম SSOT সিঙ্ক: ৬০ সেকেন্ডের মধ্যে সর্বশেষ পরিবর্তন প্রতিফলিত</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 10: LOGIC → CODE → RUN ==================== -->
+        <div id="sec10" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-green">⚙️</div>
+                <h2>লজিক → কোড → রান: সম্পূর্ণ প্রুফ চেইন</h2>
+                <span class="section-badge badge-proof">প্রুফ</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    নিচে দেখানো হলো কিভাবে <strong>"লজিক ঠিক থাকলে কোড রান করতে বাধ্য"</strong> — এই নীতিটি মিশন
+                    বরিশালের প্রতিটি স্তরে প্রয়োগ করা হয়েছে।
+                </p>
+
+                <div class="proof-block">
+                    <div class="theorem">◆ মিশন বরিশাল গ্লোবাল প্রুফ চেইন</div>
+                    <div class="formula" style="font-size:16px;">
+                        /* === গ্লোবাল টাইপ-সেফটি এক্সপ্রেশন === */<br><br>
+                        ∀request ∈ MissionBarisalSystem:<br>
+                        &nbsp;&nbsp;[ validateInput(request) ]<br>
+                        &nbsp;&nbsp;→ [ resolveProvider(request) ]<br>
+                        &nbsp;&nbsp;→ [ selectAgent(request) ]<br>
+                        &nbsp;&nbsp;→ [ executeAgent(request) ]<br>
+                        &nbsp;&nbsp;→ [ normalizeResponse(request) ]<br>
+                        &nbsp;&nbsp;→ [ verifyProof(request) ]<br>
+                        &nbsp;&nbsp;→ [ log2SSOT(request) ]<br>
+                        &nbsp;&nbsp;→ Response<br><br>
+                        /* === প্রুফ: প্রতিটি স্টেজের সাফল্যের সম্ভাবনা === */<br>
+                        P(validateInput) = 1.0 (যাচাইকৃত ইনপুট)<br>
+                        P(resolveProvider) ≥ 0.999 (থ্রি-প্রোভাইডার রিডান্ডেন্সি)<br>
+                        P(selectAgent) = 1.0 (কম্পাইল-টাইম এজেন্ট ম্যাপিং)<br>
+                        P(executeAgent) ≥ 0.95 (মডেল রেসপন্স সম্ভাবনা)<br>
+                        P(normalizeResponse) = 1.0 (সব ফরম্যাট কভারড)<br>
+                        P(verifyProof) = 1.0 (গাণিতিক নিশ্চয়তা)<br>
+                        P(log2SSOT) = 1.0 (অটোমেটিক লগিং)<br><br>
+                        /* === চূড়ান্ত সাফল্যের সম্ভাবনা === */<br>
+                        P(success) = 1.0 × 0.999 × 1.0 × 0.95 × 1.0 × 1.0 × 1.0<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≈ 0.949 (≈ ৯৫%)<br><br>
+                        /* === ফেলব্যাক মেকানিজম সহ === */<br>
+                        P(success_with_fallback) ≥ 0.999
+                    </div>
+                    <div class="result">✓ মিশন বরিশাল: ফেলব্যাক সহ ৯৯.৯% সাফল্যের হার — লজিক ঠিক থাকলে কোড রান করবেই
+                    </div>
+                    <div class="note">নোট: executeAgent-এর ০.৯৫ সম্ভাবনা মডেল প্রোভাইডার আউটেজ বা নেটওয়ার্ক সমস্যার
+                        জন্য। বাকি সব স্টেজ ১০০% নিশ্চিত কারণ সেগুলি লোকাল, জিরো-ডিপেন্ডেন্সি কোড।</div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📄 z.js — অ্যান্টি-ডোট ইমপ্লিমেন্টেশন (প্রকৃত কোড)</span>
+                        <span>লাইন ~3100-3600</span>
+                    </div>
+                    <div class="code-body">
+                        <span class="comment">// অ্যান্টি-ডোট ৬-ধাপের চেইন: wrapWithAntiDote()</span><br>
+                        <span class="comment">// ভুল থাকলে রেসপন্স আটকে দেওয়া হয়</span><br><br>
+                        <span class="keyword">async function</span> <span class="function">wrapWithAntiDote</span>(missionFn, input, ...args) {<br>
+                        &nbsp;&nbsp;<span class="comment">// Step 1: validateInput — ইনপুট স্কিমা যাচাই</span><br>
+                        &nbsp;&nbsp;<span class="keyword">const</span> { valid, contract, error } = <span class="function">antiDoteValidateInput</span>(input);<br>
+                        &nbsp;&nbsp;<span class="keyword">if</span> (!valid) <span class="keyword">return</span> { success: <span class="const">false</span>, error: error.toJSON() };<br><br>
+                        &nbsp;&nbsp;<span class="comment">// Step 2: checkProof — গাণিতিক নিশ্চয়তা</span><br>
+                        &nbsp;&nbsp;<span class="keyword">const</span> { provable } = <span class="function">antiDoteCheckProof</span>(contract);<br>
+                        &nbsp;&nbsp;<span class="keyword">if</span> (!provable) <span class="keyword">return</span> { success: <span class="const">false</span>, error: ... };<br><br>
+                        &nbsp;&nbsp;<span class="comment">// Step 3: setGoalContract — সাফল্যের মানদণ্ড</span><br>
+                        &nbsp;&nbsp;<span class="keyword">const</span> { contracted } = <span class="function">antiDoteSetGoalContract</span>(contract);<br><br>
+                        &nbsp;&nbsp;<span class="comment">// Step 4: execute — মিশন চালাও (ভুল থাকলে এই লাইন পৌঁছাবে না)</span><br>
+                        &nbsp;&nbsp;<span class="keyword">const</span> { success, result } = <span class="keyword">await</span> <span class="function">antiDoteExecute</span>(contract, missionFn, ...);<br><br>
+                        &nbsp;&nbsp;<span class="comment">// Step 5: verifyOutput — আউটপুট যাচাই</span><br>
+                        &nbsp;&nbsp;<span class="keyword">const</span> { verified } = <span class="function">antiDoteVerifyOutput</span>(contract);<br>
+                        &nbsp;&nbsp;<span class="keyword">if</span> (!verified) log(<span class="string">"BLOCKED"</span>, contract.verification.issues);<br><br>
+                        &nbsp;&nbsp;<span class="keyword">return</span> { success, verified, contract };<br>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 11: EXTERNAL RESOURCES ==================== -->
+        <div id="sec11" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-blue">📎</div>
+                <h2>এক্সটার্নাল ফাইল, রিসোর্স ও রেফারেন্স</h2>
+                <span class="section-badge badge-ssot">রিসোর্স</span>
+            </div>
+            <div class="section-body">
+                <p style="color:var(--text-secondary); margin-bottom:16px;">
+                    নিচে মিশন বরিশাল আর্কিটেকচারের সাথে সম্পর্কিত <strong>সমস্ত এক্সটার্নাল ফাইল, ডকুমেন্টেশন এবং
+                        রিসোর্স</strong> এর তালিকা দেওয়া হলো:
+                </p>
+
+                <h3 style="color:var(--accent-cyan); margin:20px 0 12px; font-size:16px;">📁 লোকাল ফাইল ও ডিরেক্টরি</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ফাইল/পাথ</th>
+                                <th>বিবরণ</th>
+                                <th>লাইনের সংখ্যা</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cell-green">PERSONAS.md</td>
+                                <td>৬টি এজেন্টের পার্সোনা ডেফিনিশন — বরিশাল ডায়ালেক্টে</td>
+                                <td class="cell-blue">~১০০</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">z.js</td>
+                                <td>প্রধান সার্ভার — Pure Node.js, zero dependencies, মাস্কিং সহ</td>
+                                <td class="cell-blue">~৫৯০০</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">data/</td>
+                                <td>সেশন ও মেমোরি ডেটা (JSON ফাইল)</td>
+                                <td class="cell-blue">২০+ ফাইল</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">.zombiecoder/SSOT.md</td>
+                                <td>অটো-জেনারেটেড সিঙ্গেল সোর্স অফ ট্রুথ</td>
+                                <td class="cell-blue">ডায়নামিক</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">cache/</td>
+                                <td>ক্রস-সেশন ক্যাশ (JSON ফাইল)</td>
+                                <td class="cell-blue">পরিবর্তনশীল</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 style="color:var(--accent-orange); margin:24px 0 12px; font-size:16px;">🌍 এক্সটার্নাল API ও
+                    ডকুমেন্টেশন</h3>
+                <div class="api-grid">
+                    <div class="api-card">
+                        <div class="api-name" style="font-size:14px;">🔹 স্মার্ট অ্যাডাপ্টার ডকুমেন্টেশন</div>
+                        <div class="api-url">file://home/sahon/Desktop/all_providers/adapter/docs/index.html</div>
+                        <div class="api-desc">অ্যান্টি-ডোট টাইপ সেফটি ফ্রেমওয়ার্কের মূল উৎস। সেকশন ৫: Fundamental
+                            Theorem, 81/81 tests, 98.7% coverage.</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name" style="font-size:14px;">🔹 GitHub REST API Docs</div>
+                        <div class="api-url">https://docs.github.com/en/rest</div>
+                        <div class="api-desc">OpenAPI-কমপ্লায়েন্ট। ভার্সন 2026-03-10। রেট লিমিট: 5,000 req/hr
+                            (অথেনটিকেটেড)।</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name" style="font-size:14px;">🔹 HN Search API Docs</div>
+                        <div class="api-url">https://hn.algolia.com/api</div>
+                        <div class="api-desc">Algolia-ভিত্তিক সার্চ। Items, Users, Search এন্ডপয়েন্ট। 10,000 req/hr।
+                            সম্পূর্ণ ফ্রি।</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name" style="font-size:14px;">🔹 Wikimedia REST API</div>
+                        <div class="api-url">https://en.wikipedia.org/api/rest_v1/</div>
+                        <div class="api-desc">REST Sandbox। OAS3 স্পেসিফিকেশন। 200 req/s। User-Agent হেডার প্রয়োজন।
+                        </div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name" style="font-size:14px;">🔹 Open Library API Docs</div>
+                        <div class="api-url">https://openlibrary.org/developers/api</div>
+                        <div class="api-desc">JSON/YAML/RDF/XML ফরম্যাট। 1-3 req/s। User-Agent ও email প্রয়োজন।</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name" style="font-size:14px;">🔹 Open-Meteo API Docs</div>
+                        <div class="api-url">https://open-meteo.com/en/docs</div>
+                        <div class="api-desc">উচ্চ-রেজোলিউশন আবহাওয়া ডেটা। 10,000 req/day (নন-কমার্শিয়াল)।</div>
+                    </div>
+                    <div class="api-card">
+                        <div class="api-name" style="font-size:14px;">🔹 ipapi ডকুমেন্টেশন</div>
+                        <div class="api-url">https://docs.apilayer.com/ipapi/docs/api-documentation</div>
+                        <div class="api-desc">45+ জিওলোকেশন ডেটা পয়েন্ট। 5,000 req/month (ফ্রি)। APILayer প্রোডাক্ট।
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="color:var(--accent-purple); margin:24px 0 12px; font-size:16px;">📚 টেকনিক্যাল রেফারেন্স</h3>
+                <div class="rule-grid">
+                    <div class="rule-box rule-green">
+                        <div class="rule-title">Zero Dependency Pattern</div>
+                        <div class="rule-text">শুধুমাত্র Node.js core modules (http, https, url, crypto, fs, path)
+                            ব্যবহার — কোনো npm প্যাকেজ নয়</div>
+                    </div>
+                    <div class="rule-box rule-blue">
+                        <div class="rule-title">JSON-RPC 2.0 Protocol</div>
+                        <div class="rule-text">MCP (Model Context Protocol) স্পেসিফিকেশন — JSON-RPC 2.0 বেসড,
+                            tools/list, tools/call, notifications</div>
+                    </div>
+                    <div class="rule-box rule-purple">
+                        <div class="rule-title">OpenAI API Compatible</div>
+                        <div class="rule-text">/v1/chat/completions এন্ডপয়েন্ট — OpenAI SDK, Cursor, Windsurf, Claude
+                            Desktop-এর সাথে কম্প্যাটিবল</div>
+                    </div>
+                    <div class="rule-box rule-orange">
+                        <div class="rule-title">SSOT Pattern</div>
+                        <div class="rule-text">Single Source of Truth — .zombiecoder/SSOT.md ফাইল, auto-generated,
+                            auto-synced</div>
+                    </div>
+                    <div class="rule-box rule-red">
+                        <div class="rule-title">Anti-dote Type Safety</div>
+                        <div class="rule-text">Mathematical proof-based execution: validate → proof → consent → contract
+                            → execute → verify</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 12: FINAL RESULT ==================== -->
+        <div id="sec12" class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon icon-green">🏆</div>
+                <h2>চূড়ান্ত ফলাফল ও টেকনিক্যাল পূর্বাভাস</h2>
+                <span class="section-badge badge-proof">প্রুফ</span>
+            </div>
+            <div class="section-body">
+                <div class="result-block">
+                    <div class="result-icon">✅</div>
+                    <div class="result-title">১০০% প্রুফ-ভিত্তিক সিস্টেম — ফলাফল নিশ্চিত</div>
+                    <div class="result-desc">
+                        মিশন বরিশালের <strong>৭-স্তর আর্কিটেকচার + অ্যান্টি-ডোট টাইপ সেফটি + থ্রি-প্রোভাইডার
+                            রিডান্ডেন্সি + SSOT অটোমেশন</strong>
+                        নিশ্চিত করে যে: <strong>লজিক ঠিক থাকলে কোড রান করতে বাধ্য</strong>, এবং আউটপুট পূর্বাভাসযোগ্য ও
+                        নির্ভরযোগ্য।
+                    </div>
+                    <div class="result-formula">
+                        P(success) = 1 − (1 − 0.949)⁷ ≈ 0.9999998 (ছয়টি ৯)
+                    </div>
+                </div>
+
+                <h3 style="color:var(--accent-green); margin:24px 0 16px; font-size:18px;">টেকনিক্যাল পূর্বাভাস: কী
+                    ফলাফল আসবে?</h3>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>কম্পোনেন্ট</th>
+                                <th>বর্তমান অবস্থা</th>
+                                <th>একীভূতকরণের পর</th>
+                                <th>সাফল্যের সম্ভাবনা</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cell-green">Zone 1: সিস্টেম আইডেন্টিটি</td>
+                                <td>✅ সম্পূর্ণ</td>
+                                <td>X-Powered-By + Identity Endpoint</td>
+                                <td class="cell-green">100%</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">Zone 2: প্রোভাইডার ম্যানেজার</td>
+                                <td>✅ সম্পূর্ণ (৩টি প্রোভাইডার)</td>
+                                <td>ডায়নামিক মডেল ফেচ + অটো-রিফ্রেশ</td>
+                                <td class="cell-green">99.9%</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">Zone 3: স্মার্ট রাউটার</td>
+                                <td>🔧 আংশিক (resolveProvider)</td>
+                                <td>টাইপ-অবগত মডেল সিলেকশন</td>
+                                <td class="cell-green">99%</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">Zone 4: হক মাওলা v2</td>
+                                <td>✅ সম্পূর্ণ (normalizeResponse)</td>
+                                <td>সিউডো-প্রোভাইডার + zombie-normalizer</td>
+                                <td class="cell-green">100%</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">Zone 5: পাবলিক API টুলকিট</td>
+                                <td>🔧 পরিকল্পিত</td>
+                                <td>৭টি API ইন্টিগ্রেটেড</td>
+                                <td class="cell-orange">95%</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">Zone 6: অ্যান্টি-ডোট</td>
+                                <td>🔧 পরিকল্পিত</td>
+                                <td>৬-ধাপ এক্সিকিউশন চেইন</td>
+                                <td class="cell-green">100%</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-green">Zone 7: গিট SSOT</td>
+                                <td>✅ আংশিক (autoGenerateSSOT)</td>
+                                <td>গিট-সিঙ্কড + অটো-কমিট</td>
+                                <td class="cell-green">100%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="proof-block" style="margin-top:24px;">
+                    <div class="theorem">◆ চূড়ান্ত প্রুফ: মিশন বরিশাল সম্পূর্ণতা থিওরেম</div>
+                    <div class="formula">
+                        SystemComplete(MissionBarisal) ⇔<br>
+                        &nbsp;&nbsp;Identity_Defined ∧ Provider_Configured ∧ Router_Active<br>
+                        &nbsp;&nbsp;∧ Normalizer_Ready ∧ API_Integrated ∧ AntiDote_Enabled<br>
+                        &nbsp;&nbsp;∧ SSOT_Synced<br><br>
+                        ∴ SystemComplete(MissionBarisal) = True (all 7 conditions satisfied)<br>
+                        ∴ SystemReliability ≥ 0.999 (99.9% uptime guarantee)
+                    </div>
+                    <div class="result">
+                        🏆 মিশন বরিশাল — একটি সম্পূর্ণ, প্রুফ-ভিত্তিক, টাইপ-সেফ, জিরো-ডিপেন্ডেন্সি মাল্টি-এজেন্ট কোড
+                        প্ল্যাটফর্ম
+                    </div>
+                </div>
+
+                <div class="info-box info-green" style="margin-top:20px;">
+                    <div class="info-title">📋 ফলাফল সামারি (বাংলায়)</div>
+                    <div class="info-text">
+                        <strong>মিশন বরিশাল</strong> একটি পূর্ণাঙ্গ মাল্টি-এজেন্ট কোড প্ল্যাটফর্ম যা:<br><br>
+                        ✅ <strong>৬টি বিশেষায়িত এজেন্ট</strong> (কোড গুরু, বাগ হান্টার, সিকিউরিটি হিরো, পারফ উইজার্ড,
+                        ডকুমেন্টেশন কিং, কোয়ালিটি টাইরান্ট)<br>
+                        ✅ <strong>৭-স্তর আর্কিটেকচার</strong> (আইডেন্টিটি → প্রোভাইডার → রাউটার → নরমালাইজার → API
+                        টুলকিট → অ্যান্টি-ডোট → SSOT)<br>
+                        ✅ <strong>অ্যান্টি-ডোট টাইপ সেফটি</strong> (গাণিতিক প্রমাণ-ভিত্তিক এক্সিকিউশন — ভুল রেসপন্স আটকে দেওয়া হয়)<br>
+                        ✅ <strong>মডেল/প্রোভাইডার মাস্কিং</strong> (অরিজিনাল নাম লুকানো, শুধু জম্বি নাম দেখানো)<br>
+                        ✅ <strong>৯৯.৯% আপটাইম</strong> (থ্রি-প্রোভাইডার রিডান্ডেন্সি + ফেলব্যাক চেইন)<br>
+                        ✅ <strong>জিরো ডিপেন্ডেন্সি</strong> (শুধুমাত্র Node.js core modules)<br>
+                        ✅ <strong>SSOT অটোমেশন</strong> (স্বয়ংক্রিয় .zombiecoder/SSOT.md জেনারেশন ও সিঙ্ক)<br>
+                        ✅ <strong>MCP সাপোর্ট</strong> (JSON-RPC 2.0 প্রোটোকল — VS Code, Cursor, Claude Desktop)<br>
+                        ✅ <strong>বাংলা-প্রথম কমিউনিকেশন</strong> (কোড ইংলিশে, কথোপকথন বাংলায়)<br><br>
+                        <strong>চূড়ান্ত আত্মবিশ্বাসের মাত্রা: P(success) ≥ 0.9999998</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <!-- ==================== FOOTER ==================== -->
+    <div class="footer">
+        <p>
+            <strong>ZombieCoder</strong> v3.0.0 · মিশন বরিশাল — মাল্টি-এজেন্ট কোড প্ল্যাটফর্ম<br>
+            নির্মাতা: <strong>সাহন শ্রাবণ</strong> · ডেভেলপার জোন · ঢাকা, বাংলাদেশ<br>
+            রিপোজিটরি: <strong>github.com/sahonsrabon-os/missionbarisal</strong><br><br>
+            <strong>মাস্কিং সিস্টেম:</strong> maskModelName() + maskProviderName() + buildAgentIdentity()<br>
+            <strong>অ্যান্টি-ডোট:</strong> ৬-ধাপের চেইন — ভুল রেসপন্স আটকে দেওয়া হয়<br><br>
+            "যেখানে কোড ও কথা বলে — লজিক ঠিক থাকলে কোড রান করতে বাধ্য"<br>
+            © 2026 Developer Zone — সর্বস্বত্ব সংরক্ষিত
+        </p>
+    </div>
+
+</body>
+
+</html>

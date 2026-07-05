@@ -1,0 +1,219 @@
+{
+  "name": "mission-barisal",
+  "displayName": "Mission Barisal",
+  "description": "🧟 Multi-Agent AI Platform — 6 agents debate, cross-verify, and produce consensus answers via SSE + MCP",
+  "version": "1.0.0",
+  "publisher": "zombie-coder",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "mission-barisal",
+    "multi-agent",
+    "ai",
+    "mcp",
+    "sse",
+    "agent",
+    "debate"
+  ],
+  "license": "MIT",
+  "activationEvents": [
+    "onStartupFinished",
+    "onLanguageModelChat:mission-barisal"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languageModelChatProviders": [
+      {
+        "vendor": "mission-barisal",
+        "displayName": "Mission Barisal",
+        "models": [
+          {
+            "id": "mb-debate",
+            "name": "6-Agent Full Debate",
+            "capabilities": {
+              "toolCalling": true
+            },
+            "description": "All 6 agents debate, cross-verify, produce consensus"
+          },
+          {
+            "id": "mb-code-guru",
+            "name": "Code Guru (Architecture)",
+            "capabilities": {
+              "toolCalling": true
+            },
+            "description": "Architecture analysis & system design expert"
+          },
+          {
+            "id": "mb-bug-hunter",
+            "name": "Bug Hunter (Debugging)",
+            "capabilities": {
+              "toolCalling": true
+            },
+            "description": "Debugging & issue diagnosis expert"
+          },
+          {
+            "id": "mb-security-hero",
+            "name": "Security Hero",
+            "capabilities": {
+              "toolCalling": true
+            },
+            "description": "Security vulnerability analysis & penetration testing"
+          },
+          {
+            "id": "mb-perf-wizard",
+            "name": "Perf Wizard",
+            "capabilities": {
+              "toolCalling": true
+            },
+            "description": "Performance optimization & bottleneck detection"
+          },
+          {
+            "id": "mb-doc-king",
+            "name": "Doc King",
+            "capabilities": {
+              "toolCalling": true
+            },
+            "description": "Documentation & technical writing expert"
+          },
+          {
+            "id": "mb-qa-tyrant",
+            "name": "QA Tyrant",
+            "capabilities": {
+              "toolCalling": true
+            },
+            "description": "Code quality enforcement & best practices"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "mission-barisal.openPanel",
+        "title": "Open Mission Barisal Panel",
+        "icon": "$(robot)",
+        "category": "Mission Barisal"
+      },
+      {
+        "command": "mission-barisal.connect",
+        "title": "Connect to Server",
+        "icon": "$(plug)",
+        "category": "Mission Barisal"
+      },
+      {
+        "command": "mission-barisal.disconnect",
+        "title": "Disconnect from Server",
+        "icon": "$(debug-disconnect)",
+        "category": "Mission Barisal"
+      },
+      {
+        "command": "mission-barisal.listTools",
+        "title": "MCP: List Tools",
+        "icon": "$(list-unordered)",
+        "category": "Mission Barisal"
+      },
+      {
+        "command": "mission-barisal.callTool",
+        "title": "MCP: Call Tool",
+        "icon": "$(play)",
+        "category": "Mission Barisal"
+      },
+      {
+        "command": "mission-barisal.quickAsk",
+        "title": "Quick Ask (single agent)",
+        "icon": "$(question)",
+        "category": "Mission Barisal"
+      },
+      {
+        "command": "mission-barisal.scanWorkspace",
+        "title": "Scan Workspace for SSOT",
+        "icon": "$(search)",
+        "category": "Mission Barisal"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "mission-barisal",
+          "title": "Mission Barisal",
+          "icon": "$(robot)"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "mission-barisal-agents",
+          "name": "Agent Status",
+          "when": "mission-barisal.connected"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Mission Barisal",
+      "properties": {
+        "mission-barisal.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "Mission Barisal server URL",
+          "pattern": "^https?://.+"
+        },
+        "mission-barisal.autoConnect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-connect to server on startup"
+        },
+        "mission-barisal.pingInterval": {
+          "type": "number",
+          "default": 30,
+          "description": "Heartbeat ping interval in seconds"
+        }
+      }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "mission-barisal.openPanel",
+          "when": "mission-barisal.connected"
+        },
+        {
+          "command": "mission-barisal.connect",
+          "when": "!mission-barisal.connected"
+        },
+        {
+          "command": "mission-barisal.disconnect",
+          "when": "mission-barisal.connected"
+        },
+        {
+          "command": "mission-barisal.listTools"
+        },
+        {
+          "command": "mission-barisal.callTool"
+        },
+        {
+          "command": "mission-barisal.quickAsk"
+        },
+        {
+          "command": "mission-barisal.scanWorkspace",
+          "when": "mission-barisal.connected"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "18.x",
+    "typescript": "^5.3.3"
+  }
+}

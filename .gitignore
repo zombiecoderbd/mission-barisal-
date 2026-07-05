@@ -1,0 +1,41 @@
+# ─── Audio & Binary ─────────────────────────────────────────────
+*.mp3
+*.wav
+*.ogg
+*.vsix
+*.zip
+*.tar.gz
+
+# ─── Dependencies ──────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build Output ──────────────────────────────────────────────
+out/
+dist/
+build/
+*.js.map
+
+# ─── OS Files ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ─── IDE & Editor ──────────────────────────────────────────────
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# ─── Runtime Data ──────────────────────────────────────────────
+server/data/
+server/cache/
+server/logs/
+*.log
+
+# ─── Project-specific ──────────────────────────────────────────
+.zombiecoder/
+task.md

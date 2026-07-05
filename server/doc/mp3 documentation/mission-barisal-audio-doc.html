@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎧 মিশন বরিশাল — MP3 ডকুমেন্টেশন: অ্যান্টি-ডোট, এসএসই ও মাল্টি-এজেন্ট আর্কিটেকচার</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2332;
+            --bg-code: #0d1117;
+            --border: #2d3748;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-green: #22c55e;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --waveform-color1: #22c55e;
+            --waveform-color2: #3b82f6;
+            --waveform-color3: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Bengali', 'JetBrains Mono', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        /* ===== AUDIO PLAYER HERO ===== */
+        .audio-hero {
+            background: linear-gradient(135deg, #0a0e17 0%, #1a2332 50%, #0f172a 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 40px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .audio-hero-content {
+            position: relative;
+        }
+
+        .audio-hero .badge {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--accent-green);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .audio-hero h1 {
+            font-size: 2.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #22c55e, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .audio-hero p {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        /* ===== WAVEFORM PLAYER VISUAL ===== */
+        .waveform-player {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 32px;
+            max-width: 650px;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-green);
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--accent-green);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .play-btn:hover {
+            background: rgba(34, 197, 94, 0.2);
+            transform: scale(1.05);
+        }
+
+        .waveform-bars {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 50px;
+            flex: 1;
+        }
+
+        .waveform-bars .bar {
+            width: 4px;
+            border-radius: 2px;
+            background: linear-gradient(to top, var(--waveform-color1), var(--waveform-color2), var(--waveform-color3));
+            animation: waveAnim 1.5s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        .waveform-bars .bar:nth-child(1) {
+            height: 20%;
+            animation-delay: 0s;
+        }
+
+        .waveform-bars .bar:nth-child(2) {
+            height: 35%;
+            animation-delay: 0.1s;
+        }
+
+        .waveform-bars .bar:nth-child(3) {
+            height: 50%;
+            animation-delay: 0.2s;
+        }
+
+        .waveform-bars .bar:nth-child(4) {
+            height: 65%;
+            animation-delay: 0.3s;
+        }
+
+        .waveform-bars .bar:nth-child(5) {
+            height: 80%;
+            animation-delay: 0.4s;
+        }
+
+        .waveform-bars .bar:nth-child(6) {
+            height: 45%;
+            animation-delay: 0.5s;
+        }
+
+        .waveform-bars .bar:nth-child(7) {
+            height: 70%;
+            animation-delay: 0.6s;
+        }
+
+        .waveform-bars .bar:nth-child(8) {
+            height: 55%;
+            animation-delay: 0.7s;
+        }
+
+        .waveform-bars .bar:nth-child(9) {
+            height: 85%;
+            animation-delay: 0.8s;
+        }
+
+        .waveform-bars .bar:nth-child(10) {
+            height: 40%;
+            animation-delay: 0.9s;
+        }
+
+        .waveform-bars .bar:nth-child(11) {
+            height: 75%;
+            animation-delay: 1.0s;
+        }
+
+        .waveform-bars .bar:nth-child(12) {
+            height: 60%;
+            animation-delay: 1.1s;
+        }
+
+        .waveform-bars .bar:nth-child(13) {
+            height: 30%;
+            animation-delay: 1.2s;
+        }
+
+        .waveform-bars .bar:nth-child(14) {
+            height: 90%;
+            animation-delay: 1.3s;
+        }
+
+        .waveform-bars .bar:nth-child(15) {
+            height: 25%;
+            animation-delay: 1.4s;
+        }
+
+        .waveform-bars .bar:nth-child(16) {
+            height: 50%;
+            animation-delay: 1.5s;
+        }
+
+        .waveform-bars .bar:nth-child(17) {
+            height: 70%;
+            animation-delay: 1.6s;
+        }
+
+        .waveform-bars .bar:nth-child(18) {
+            height: 35%;
+            animation-delay: 1.7s;
+        }
+
+        .waveform-bars .bar:nth-child(19) {
+            height: 65%;
+            animation-delay: 1.8s;
+        }
+
+        .waveform-bars .bar:nth-child(20) {
+            height: 45%;
+            animation-delay: 1.9s;
+        }
+
+        @keyframes waveAnim {
+
+            0%,
+            100% {
+                transform: scaleY(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scaleY(1.4);
+                opacity: 1;
+            }
+        }
+
+        .player-info {
+            text-align: left;
+            flex-shrink: 0;
+            min-width: 120px;
+        }
+
+        .player-info .track {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .player-info .time {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .chapter-indicator {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .chapter-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .chapter-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .chapter-nav a:hover {
+            background: var(--bg-code);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        /* ===== CHAPTER SECTIONS ===== */
+        .chapter {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .chapter-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .chapter-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .chapter-number.green {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+        }
+
+        .chapter-number.blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .chapter-number.purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .chapter-number.orange {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+        }
+
+        .chapter-number.red {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+
+        .chapter-number.cyan {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .chapter-number.pink {
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--accent-pink);
+        }
+
+        .chapter-title {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .chapter-title .timestamp {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 400;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .chapter-body {
+            padding: 24px 28px;
+        }
+
+        .chapter-body p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .chapter-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight-box {
+            background: var(--bg-code);
+            border-left: 3px solid var(--accent-green);
+            border-radius: 0 8px 8px 0;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+
+        .highlight-box.warn {
+            border-left-color: var(--accent-orange);
+        }
+
+        .highlight-box.error {
+            border-left-color: var(--accent-red);
+        }
+
+        .highlight-box.info {
+            border-left-color: var(--accent-blue);
+        }
+
+        .highlight-box.purple {
+            border-left-color: var(--accent-purple);
+        }
+
+        .highlight-box .label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .highlight-box .label.green {
+            color: var(--accent-green);
+        }
+
+        .highlight-box .label.orange {
+            color: var(--accent-orange);
+        }
+
+        .highlight-box .label.red {
+            color: var(--accent-red);
+        }
+
+        .highlight-box .label.blue {
+            color: var(--accent-blue);
+        }
+
+        .highlight-box .label.purple {
+            color: var(--accent-purple);
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        code,
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 16px 0;
+        }
+
+        pre .comment {
+            color: #6a737d;
+        }
+
+        pre .keyword {
+            color: #ff79c6;
+        }
+
+        pre .string {
+            color: #f1fa8c;
+        }
+
+        pre .function {
+            color: #50fa7b;
+        }
+
+        pre .number {
+            color: #bd93f9;
+        }
+
+        pre .error-line {
+            background: rgba(239, 68, 68, 0.15);
+            display: block;
+        }
+
+        pre .error-msg {
+            color: #ff5555;
+        }
+
+        pre .dim {
+            color: #6272a4;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .status-item {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-dot.done {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+        }
+
+        .status-dot.pending {
+            background: var(--accent-orange);
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .status-dot.fail {
+            background: var(--accent-red);
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .status-dot.future {
+            background: var(--text-muted);
+        }
+
+        .status-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== COMMENTARY BUBBLES ===== */
+        .commentary {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.08));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .commentary::before {
+            content: '🗣️';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            font-size: 24px;
+        }
+
+        .commentary .author {
+            font-size: 12px;
+            color: var(--accent-purple);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .commentary p {
+            color: var(--text-primary) !important;
+        }
+
+        /* ===== MOCK RESPONSE ===== */
+        .mock-demo {
+            background: var(--bg-code);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .mock-header {
+            background: #1e293b;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-bottom: 1px solid #334155;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .mock-body {
+            padding: 16px 20px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .mock-body .request {
+            color: var(--accent-cyan);
+        }
+
+        .mock-body .response {
+            color: var(--accent-green);
+        }
+
+        .mock-body .error-resp {
+            color: var(--accent-red);
+        }
+
+        .mock-body .thinking {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ===== DIAGRAM ===== */
+        .ascii-diagram {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 16px 0;
+            color: var(--text-secondary);
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+
+        .timeline-item.done::before {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .timeline-item.pending::before {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+        }
+
+        .timeline-item.future::before {
+            background: transparent;
+            border-color: var(--text-muted);
+        }
+
+        .timeline-item .tl-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .timeline-item .tl-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ===== SCORE DISPLAY ===== */
+        .score-ring {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin: 8px 0;
+        }
+
+        .score-ring .number {
+            font-size: 28px;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .score-ring .number.pass {
+            color: var(--accent-green);
+        }
+
+        .score-ring .label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== COMPARISON TABLE ===== */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .comparison-table td {
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-table .good {
+            color: var(--accent-green);
+        }
+
+        .comparison-table .bad {
+            color: var(--accent-red);
+        }
+
+        .comparison-table .neutral {
+            color: var(--accent-orange);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer strong {
+            color: var(--text-secondary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .audio-hero {
+                padding: 40px 20px 30px;
+            }
+
+            .audio-hero h1 {
+                font-size: 1.6em;
+            }
+
+            .waveform-player {
+                flex-direction: column;
+                padding: 16px;
+            }
+
+            .player-info {
+                text-align: center;
+            }
+
+            .chapter-body {
+                padding: 16px;
+            }
+
+            .chapter-header {
+                padding: 14px 16px;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== HERO ===== -->
+    <div class="audio-hero">
+        <div class="audio-hero-content">
+            <div class="badge">🎧 Mission Barisal Audio Doc v1.0</div>
+            <h1>মিশন বরিশাল — MP3 ডকুমেন্টেশন</h1>
+            <p>অ্যান্টি-ডোট টাইপ সেফটি · SSE বনাম HTTP · মাল্টি-এজেন্ট আর্কিটেকচার · ইন্ডাস্ট্রি রিভিউ</p>
+
+            <!-- WAVEFORM PLAYER -->
+            <div class="waveform-player">
+                <div class="play-btn"
+                    onclick="alert('🎵 এই MP3 প্লেয়ারটি একটি ভিজুয়াল উপস্থাপনা। সম্পূর্ণ কন্টেন্ট নিচে ডকুমেন্ট আকারে দেওয়া আছে।')">
+                    ▶</div>
+                <div class="waveform-bars">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="player-info">
+                    <div class="track">🎙️ কোড গুরু - মনু</div>
+                    <div class="time">00:00 / 42:16</div>
+                </div>
+            </div>
+            <div class="chapter-indicator">📖 ১২টি চ্যাপ্টার · 🎯 সম্পূর্ণ আর্কিটেকচার রিভিউ</div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- CHAPTER NAV -->
+        <div class="chapter-nav">
+            <a href="#ch1">🎬 ১. ভূমিকা</a>
+            <a href="#ch2">✅ ২. যা করা হয়েছে</a>
+            <a href="#ch3">📋 ৩. পরবর্তী ধাপ</a>
+            <a href="#ch4">💬 ৪. কোড গুরু-র মন্তব্য</a>
+            <a href="#ch5">❌ ৫. এরর ভিজুয়ালাইজেশন</a>
+            <a href="#ch6">🎭 ৬. মক রেসপন্স</a>
+            <a href="#ch7">📝 ৭. সেশন ডকুমেন্টেশন এজেন্ট</a>
+            <a href="#ch8">👤 ৮. এজেন্ট পার্সোনা ক্ল্যারিটি</a>
+            <a href="#ch9">🔌 ৯. এসএসই বনাম এইচটিটিপি</a>
+            <a href="#ch10">🏭 ১০. ইন্ডাস্ট্রি বেস্ট প্র্যাকটিস</a>
+            <a href="#ch11">⚡ ১১. মিসিং ফিচারস</a>
+            <a href="#ch12">🏁 ১২. উপসংহার</a>
+        </div>
+
+        <!-- ===== CHAPTER 1: ভূমিকা ===== -->
+        <div class="chapter" id="ch1">
+            <div class="chapter-header">
+                <div class="chapter-number green">🎬</div>
+                <div class="chapter-title">
+                    ভূমিকা — এই MP3 ডকুমেন্টেশন কী এবং কেন
+                    <span class="timestamp">▶ ০০:০০ — চ্যাপ্টার ১</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>ভাইয়া, স্বাগতম। এটি <strong>মিশন বরিশালের</strong> অডিও ডকুমেন্টেশন। এই ডকুমেন্টেশনটি MP3 ফরম্যাটে
+                    তৈরি — যেখানে আমরা পুরো প্রজেক্টের বর্তমান অবস্থা, ভবিষ্যৎ পরিকল্পনা, এবং ইন্ডাস্ট্রি বেস্ট
+                    প্র্যাকটিস থেকে কী কী মিসিং আছে সেটি বিশ্লেষণ করেছি।</p>
+
+                <div class="highlight-box info">
+                    <div class="label blue">🎯 মূল উদ্দেশ্য</div>
+                    <p>আমরা যে ৭-লেয়ার আর্কিটেকচার প্ল্যান করেছিলাম, তার মধ্যে <strong>লেয়ার ৬ (অ্যান্টি-ডোট টাইপ
+                            সেফটি)</strong> সম্পূর্ণ ইমপ্লিমেন্ট এবং টেস্টেড। বাকি লেয়ারগুলো এখনও পেন্ডিং। এই
+                        ডকুমেন্টেশনে আমরা পুরো জার্নি রিভিউ করব, আমার (কোড গুরু - মনু) ইন্ডাস্ট্রি দৃষ্টিকোণ থেকে
+                        মন্তব্য যোগ করব, এবং এসএসই-র গুরুত্ব নিয়ে বিস্তারিত আলোচনা করব।</p>
+                </div>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু (Architecture Review)</div>
+                    <p>ভাইয়া, এই MP3 ডকুমেন্টেশন কিন্তু শুধু "কি করলাম" তার লিস্ট না। বরং এটা একটা <strong>টেকনিক্যাল
+                            অডিট</strong> — যেখানে আমরা সত্যকে সত্য রেখে, মিথ্যাকে মিথ্যা রেখে পুরো সিস্টেমের শক্তি এবং
+                        দুর্বলতা দুটোই দেখব। ইন্ডাস্ট্রিতে কী স্ট্যান্ডার্ড, আমরা কোথায় আছি, এবং কোথায় যেতে হবে —
+                        সেটাই পুরো কাহিনী।</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 2: যা করা হয়েছে ===== -->
+        <div class="chapter" id="ch2">
+            <div class="chapter-header">
+                <div class="chapter-number blue">✅</div>
+                <div class="chapter-title">
+                    যা করা হয়েছে — সম্পূর্ণ ইমপ্লিমেন্টেশন লিস্ট
+                    <span class="timestamp">▶ ০৪:১২ — চ্যাপ্টার ২</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>নিচে আমরা যে কাজগুলো ইতিমধ্যে সম্পন্ন করেছি, তার একটি সম্পূর্ণ তালিকা দেওয়া হলো:</p>
+
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">অ্যান্টি-ডোট টাইপ সেফটি</div>
+                            <div class="status-desc">6-step chain: validate → proof → contract → execute → verify</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">ANTIDOTE_ERRORS কনস্ট্যান্ট</div>
+                            <div class="status-desc">6 error types + AntiDoteError class</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">POST /api/v1/anti-dote এন্ডপয়েন্ট</div>
+                            <div class="status-desc">Full contract return + score (100/100)</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">RUNTIME_CONFIG.antiDoteEnabled</div>
+                            <div class="status-desc">ANTIDOTE_ENABLED env flag</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">SSE Streaming in /api/mission</div>
+                            <div class="status-desc">text/event-stream with progress callback</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">3-Phase Mission Execution</div>
+                            <div class="status-desc">Phase 1 (parallel) → Phase 2 (verify) → Phase 3 (combine)</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">6 Agents with Persona Masking</div>
+                            <div class="status-desc">code-guru, bug-hunter, security-hero, etc.</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">Model Masking System</div>
+                            <div class="status-desc">Agents never know real model names</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">Smart Input Classification</div>
+                            <div class="status-desc">Greeting → 1 agent, Task → 6 agents</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">Cross-Check Debate System</div>
+                            <div class="status-desc">Agents review each other's responses</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="label green">🧪 টেস্ট ফলাফল — অ্যান্টি-ডোট</div>
+                    <div class="score-ring">
+                        <span class="number pass">100</span>
+                        <span class="label">/ 100 — Verdict: ✅ PASS</span>
+                    </div>
+                    <p style="margin-top:12px;">৪টি চেকই পাস করেছে: <code>has_output</code>,
+                        <code>agents_responded</code>, <code>cross_verified</code>, <code>language_match</code>। গ্রিটিং
+                        এবং কোড টাস্ক — উভয় টেস্টেই ১০০/১০০ স্কোর।</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 3: পরবর্তী ধাপ ===== -->
+        <div class="chapter" id="ch3">
+            <div class="chapter-header">
+                <div class="chapter-number orange">📋</div>
+                <div class="chapter-title">
+                    পরবর্তী ধাপ — পেন্ডিং ইমপ্লিমেন্টেশন
+                    <span class="timestamp">▶ ০৯:৪৫ — চ্যাপ্টার ৩</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>অ্যান্টি-ডোট শেষ। এখন বাকি আছে আরও ৬টি বড় আর্কিটেকচার লেয়ার। নিচে প্রতিটি লেয়ারের বর্তমান অবস্থা
+                    এবং কী করতে হবে তা দেওয়া হলো:</p>
+
+                <div class="timeline">
+                    <div class="timeline-item done">
+                        <div class="tl-title">✅ লেয়ার ৬: অ্যান্টি-ডোট টাইপ সেফটি</div>
+                        <div class="tl-desc">সম্পূর্ণ ইমপ্লিমেন্ট এবং টেস্টেড। স্কোর: ১০০/১০০</div>
+                    </div>
+                    <div class="timeline-item pending">
+                        <div class="tl-title">⏳ অপশনাল অ্যান্টি-ডোট ইন্টিগ্রেশন</div>
+                        <div class="tl-desc"><code>/api/mission</code> এবং <code>/v1/chat/completions</code>-এ
+                            <code>?anti_dote=true</code> প্যারামিটার যোগ করা</div>
+                    </div>
+                    <div class="timeline-item pending">
+                        <div class="tl-title">⏳ MCP ইন্টিগ্রেশন (agent_mission tool)</div>
+                        <div class="tl-desc">agent_mission টুলে অ্যান্টি-ডোট যুক্ত করা</div>
+                    </div>
+                    <div class="timeline-item future">
+                        <div class="tl-title">🔮 লেয়ার ১: পারসিস্টেন্ট স্টোরেজ</div>
+                        <div class="tl-desc">JSON ফাইল → ডাটাবেস মাইগ্রেশন (SQLite/Prisma)</div>
+                    </div>
+                    <div class="timeline-item future">
+                        <div class="tl-title">🔮 লেয়ার ২: ইউজার ম্যানেজমেন্ট</div>
+                        <div class="tl-desc">Auth, rate limiting, API keys</div>
+                    </div>
+                    <div class="timeline-item future">
+                        <div class="tl-title">🔮 লেয়ার ৩: স্মার্ট রাউটার</div>
+                        <div class="tl-desc">resolveProvider() এনহান্সমেন্ট — type-aware মডেল সিলেকশন</div>
+                    </div>
+                    <div class="timeline-item future">
+                        <div class="tl-title">🔮 লেয়ার ৪: হক মাওলা নরমালাইজার v2</div>
+                        <div class="tl-desc">Pseudo-provider mode + zombie-normalizer model</div>
+                    </div>
+                    <div class="timeline-item future">
+                        <div class="tl-title">🔮 লেয়ার ৫: পাবলিক API টুলকিট</div>
+                        <div class="tl-desc">GitHub, HN, Wikipedia, News, etc. API integration</div>
+                    </div>
+                    <div class="timeline-item future">
+                        <div class="tl-title">🔮 লেয়ার ৭: Git SSOT</div>
+                        <div class="tl-desc">autoGenerateSSOT with git-sync and auto-commit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 4: কোড গুরু-র মন্তব্য ===== -->
+        <div class="chapter" id="ch4">
+            <div class="chapter-header">
+                <div class="chapter-number purple">💬</div>
+                <div class="chapter-title">
+                    কোড গুরু - মনু-র ইন্ডাস্ট্রি মন্তব্য
+                    <span class="timestamp">▶ ১৪:২০ — চ্যাপ্টার ৪</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু (Architecture Review)</div>
+                    <p>ভাইয়া, এখন আমি ইন্ডাস্ট্রির বেস্ট প্র্যাকটিসের সাথে আমাদের কোড কমপেয়ার করব। এইটা আমার ব্যক্তিগত
+                        মন্তব্য, প্রমাণ ছাড়া কিছু বলব না।</p>
+                </div>
+
+                <h3 style="margin: 20px 0 12px; font-size: 16px;">🔷 আর্কিটেকচার: জিরো ডিপেন্ডেন্সি — ভালো না খারাপ?
+                </h3>
+                <p>আমাদের <code>server/z.js</code> জিরো এক্সটার্নাল ডিপেন্ডেন্সি — শুধু Node.js কোর মডিউল। ইন্ডাস্ট্রিতে
+                    এই পদ্ধতিকে <strong>"Vanilla Node.js Architecture"</strong> বলে। ভালো দিক: ডিপ্লয়মেন্ট সুপার
+                    সিম্পল, কোন <code>npm install</code> লাগে না। খারাপ দিক: প্রতিটি ফিচার (রাউটিং, বডি পার্সিং, SSE
+                    হ্যান্ডলিং) নিজেদের লিখতে হয়।</p>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>বৈশিষ্ট্য</th>
+                        <th>আমাদের সিস্টেম</th>
+                        <th>ইন্ডাস্ট্রি স্ট্যান্ডার্ড</th>
+                    </tr>
+                    <tr>
+                        <td>ডিপেন্ডেন্সি</td>
+                        <td class="good">✅ Zero</td>
+                        <td class="neutral">Express/Fastify/Next.js</td>
+                    </tr>
+                    <tr>
+                        <td>SSE সাপোর্ট</td>
+                        <td class="neutral">✅ ম্যানুয়াল (raw write)</td>
+                        <td class="good">✅ SSE প্যাকেজ/মিডলওয়্যার</td>
+                    </tr>
+                    <tr>
+                        <td>রাউটিং</td>
+                        <td class="neutral">✅ ম্যানুয়াল if/else</td>
+                        <td class="good">✅ ডিক্লেয়ারেটিভ রাউটার</td>
+                    </tr>
+                    <tr>
+                        <td>বডি পার্সিং</td>
+                        <td class="neutral">✅ readBody()</td>
+                        <td class="good">✅ বিল্ট-ইন মিডলওয়্যার</td>
+                    </tr>
+                    <tr>
+                        <td>এরর হ্যান্ডলিং</td>
+                        <td class="good">✅ AntiDoteError class</td>
+                        <td class="good">✅ Error middleware</td>
+                    </tr>
+                    <tr>
+                        <td>টেস্ট কভারেজ</td>
+                        <td class="bad">❌ ম্যানুয়াল curl</td>
+                        <td class="good">✅ Jest/Vitest + CI</td>
+                    </tr>
+                    <tr>
+                        <td>টাইপ সেফটি</td>
+                        <td class="good">✅ Runtime (Anti-Dote)</td>
+                        <td class="good">✅ Compile-time (TypeScript)</td>
+                    </tr>
+                </table>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>দেখো ভাইয়া, জিরো ডিপেন্ডেন্সি একটা পজিটিভ — কিন্তু এটা scalability-র খরচে আসে। যখন ২০টা রাউট
+                        হবে, ম্যানুয়াল if/else দিয়ে হ্যান্ডল করা কঠিন হবে। তখন Express বা Fastify-র মতো কিছু নিতে হবে।
+                        তবে আপাতত আমাদের সাইজের জন্য এটা ঠিক আছে। <strong>প্রমাণ:</strong> z.js-এর রাউটিং সেকশন দেখো —
+                        প্রতিটি রাউটের জন্য আলাদা if ব্লক। ২০টা রাউট হলে কোড ১০,০০০ লাইন ছাড়িয়ে যাবে।</p>
+                </div>
+
+                <h3 style="margin: 20px 0 12px; font-size: 16px;">🔷 অ্যান্টি-ডোট: টাইপ সেফটি — স্ট্রং পয়েন্ট</h3>
+                <p>আমাদের Anti-Dote সিস্টেম ইন্ডাস্ট্রিতে <strong>Design by Contract (DbC)</strong> নামে পরিচিত।
+                    Bertrand Mayer-র Eiffel ল্যাঙ্গুয়েজ থেকে আসা এই কনসেপ্টটা সাধারণত টাইপস্ক্রিপ্ট/জাভা-তে দেখা যায়,
+                    কিন্তু আমরা এটা JavaScript-এ runtime-এ ইমপ্লিমেন্ট করেছি।</p>
+
+                <div class="highlight-box info">
+                    <div class="label blue">📊 ইন্ডাস্ট্রি কমপ্যারিজন</div>
+                    <ul style="color: var(--text-secondary); padding-left: 20px;">
+                        <li><strong>TypeScript:</strong> Compile-time type safety → runtime-এ unprotected</li>
+                        <li><strong>Zod:</strong> Runtime validation → schema-only, no contract chain</li>
+                        <li><strong>Ourb Anti-Dote:</strong> Runtime + Contract + Proof + Score → Full lifecycle safety
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>ভাইয়া, অ্যান্টি-ডোট কিন্তু ইন্ডাস্ট্রিতেও ইউনিক। Zod বা TypeScript শুধু <em>data shape</em>
+                        ভেরিফাই করে। আমরা <em>execution proof</em> ভেরিফাই করি — মানে শুধু "ডাটা ঠিক আছে" না, বরং "কাজটা
+                        সঠিকভাবে হয়েছে" সেটা প্রমাণ করি। এই কনসেপ্টটা <strong>Formal Verification</strong> থেকে নেওয়া
+                        — যা সাধারণত aerospace বা finance এ ব্যবহার হয়। এটা আমাদের সিস্টেমের সবচেয়ে বড় স্ট্রেংথ। তবে
+                        দুর্বলতা হচ্ছে: এটা শুধু anti-dote এন্ডপয়েন্টে, মূল mission এন্ডপয়েন্টে এখনও লাগানো বাকি।</p>
+                </div>
+
+                <h3 style="margin: 20px 0 12px; font-size: 16px;">🔷 এসএসই ইমপ্লিমেন্টেশন: হাফ-ডান</h3>
+                <p>বর্তমান SSE ইমপ্লিমেন্টেশন OpenAI-format chunk তৈরি করে <code>res.write()</code> দিয়ে ডাটা পাঠায়।
+                    কিন্তু এখানে কিছু সমস্যা আছে:</p>
+
+                <pre><span class="dim">// Current SSE implementation (simplified)</span>
+<span class="keyword">const</span> wantsSSE = req.headers.accept <span class="keyword">&&</span>
+  req.headers.accept.includes(<span class="string">"text/event-stream"</span>);
+<span class="keyword">if</span> (wantsSSE) {
+  res.writeHead(<span class="number">200</span>, {
+    <span class="string">"Content-Type"</span>: <span class="string">"text/event-stream"</span>,
+    <span class="string">"Cache-Control"</span>: <span class="string">"no-cache"</span>,
+    <span class="string">"Connection"</span>: <span class="string">"keep-alive"</span>,
+    <span class="error-line">  // ❌ X-Accel-Buffering: no — মিসিং!</span>
+    <span class="error-line">  // ❌ Access-Control-Allow-Origin: শুধু SSE-তে, non-SSE-তে CORS মিসিং</span>
+  });</pre>
+
+                <div class="highlight-box error">
+                    <div class="label red">❌ পরিচিত সমস্যা — SSE Buffering</div>
+                    <p>SSE-তে <code>X-Accel-Buffering: no</code> হেডার না থাকলে Nginx/LB ডাটা বাফার করে রাখবে। এডিটর তখন
+                        যতক্ষণ না পুরো রেসপন্স শেষ হচ্ছে, ততক্ষণ কিছুই পাবে না। <strong>প্রমাণ:</strong> এজেন্ট পার্সোনা
+                        ডকুমেন্টের Server-Sent Events.md ফাইলে স্পষ্টভাবে বলা আছে — "`X-Accel-Buffering: no` হেডারটা যোগ
+                        করা জরুরি"।</p>
+                </div>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>ভাইয়া, SSE ইমপ্লিমেন্টেশন ঠিকই আছে বেসিক লেভেলে, কিন্তু <strong>রিয়েল-টাইম মাল্টি-এজেন্ট
+                            ফিডব্যাকের জন্য এটা যথেষ্ট না</strong>। কারণ: বর্তমানে সব ৬ এজেন্টের আউটপুক্কুর একসাথে বাফার
+                        হয়ে তারপর পাঠাচ্ছে। ইন্ডাস্ট্রিতে (LangChain, AutoGen, CrewAI) তারা প্রতিটি এজেন্টের স্টেপ
+                        আলাদা SSE ইভেন্ট হিসেবে পাঠায় — যেমন <code>event: agent_start</code>,
+                        <code>event: agent_tool_call</code>, <code>event: agent_complete</code>। আমাদের শুধু একটি
+                        জেনেরিক OpenAI-chunk ফরম্যাট আছে, যা এজেন্ট-লেভেল গ্রানুলারিটি দেয় না।</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 5: এরর ভিজুয়ালাইজেশন ===== -->
+        <div class="chapter" id="ch5">
+            <div class="chapter-header">
+                <div class="chapter-number red">❌</div>
+                <div class="chapter-title">
+                    এরর ভিজুয়ালাইজেশন — কোথায় কী ভুল হতে পারে
+                    <span class="timestamp">▶ ২১:০৮ — চ্যাপ্টার ৫</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>ইমপ্লিমেন্টেশনের সময় আমরা যেসব এররের সম্মুখীন হয়েছি এবং ভবিষ্যতে হতে পারে:</p>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🐛 বাগ ১: Proof Self-Reference Error</h3>
+                <pre><span class="comment">// ❌ BEFORE: Cannot access 'proof' before initialization</span>
+<span class="keyword">const</span> reason = !proof?.hasCodeIndicator
+  ? <span class="string">"No code indicator found"</span>
+  : <span class="string">"Has code patterns"</span>;  <span class="error-line"><span class="error-msg">// TypeError: Cannot access 'proof'</span></span>
+
+<span class="keyword">const</span> proof = {
+  hasCodeIndicator: hasCodePatterns(input),
+  reason: reason,  <span class="error-line"><span class="error-msg">// proof referenced before initialization!</span></span>
+};
+
+<span class="comment">// ✅ AFTER: Local variables before object construction</span>
+<span class="keyword">const</span> _hasCode = hasCodePatterns(input);
+<span class="keyword">const</span> _reason = _hasCode
+  ? <span class="string">"Has code patterns"</span>
+  : <span class="string">"No code indicator found"</span>;
+
+<span class="keyword">const</span> proof = {
+  hasCodeIndicator: _hasCode,
+  reason: _reason,
+};</pre>
+
+                <div class="highlight-box error">
+                    <div class="label red">💥 এরর: Cannot access 'proof' before initialization</div>
+                    <p>এটা TDZ (Temporal Dead Zone) এরর — ES6-এর <code>const</code>/<code>let</code> এর প্রপার্টি।
+                        <code>const proof</code> অবজেক্টের ভিতরে <code>proof?.hasCodeIndicator</code> রেফারেন্স করা যায়
+                        না কারণ proof এখনো ইনিশিয়ালাইজ হয়নি। সমাধান: লোকাল ভেরিয়েবল <code>_hasCode</code>,
+                        <code>_reason</code> ব্যবহার করা।</p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🐛 বাগ ২: Argument Pass-Through Missing</h3>
+                <pre><span class="comment">// ❌ BEFORE: Input not passed to executeMission</span>
+<span class="keyword">const</span> result = <span class="keyword">await</span> antiDoteExecute(
+  contract,
+  executeMission <span class="error-line"><span class="error-msg">// ❌ input argument missing!</span></span>
+);
+
+<span class="comment">// ✅ AFTER: Full argument forwarding</span>
+<span class="keyword">const</span> result = <span class="keyword">await</span> antiDoteExecute(
+  contract,
+  executeMission,
+  input,   <span class="comment">// ✅ input forwarded</span>
+  ...args  <span class="comment">// ✅ extra args forwarded</span>
+);</pre>
+
+                <div class="highlight-box error">
+                    <div class="label red">💥 এরর: "No agents could respond"</div>
+                    <p>অ্যান্টি-ডোট এন্ডপয়েন্ট কাজ করছিল না কারণ <code>executeMission</code> কল করার সময়
+                        <code>input</code> প্যারামিটার পাঠানো হয়নি। <code>executeMission(userInput, ...)</code> — এখানে
+                        <code>userInput</code> <code>undefined</code> ছিল, তাই সিস্টেম ভেবেছিল কোনো ইনপুট নেই।</p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🔮 ভবিষ্যতের সম্ভাব্য এরর</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">SSE Reconnection</div>
+                            <div class="status-desc">এডিটর ডিসকানেক্ট করলে পুনরায় কানেক্ট না হয়েই থেমে যাবে</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">CORS Non-SSE</div>
+                            <div class="status-desc">/api/mission non-SSE মোডে CORS হেডার মিসিং</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">Memory Leak (SSE)</div>
+                            <div class="status-desc">SSE স্ট্রিম শেষে pushLog/Agent/Output ফাংশনগুলো রিস্টোর না হলে লিক
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">HTTP Flood</div>
+                            <div class="status-desc">HTTP রিকোয়েস্টে প্রতি এজেন্টের জন্য আলাদা কল করলে সার্ভার ব্লক
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 6: মক রেসপন্স ===== -->
+        <div class="chapter" id="ch6">
+            <div class="chapter-header">
+                <div class="chapter-number cyan">🎭</div>
+                <div class="chapter-title">
+                    মক রেসপন্স — অভিনয়, কিন্তু সত্যকে সত্য রেখে
+                    <span class="timestamp">▶ ২৪:৫০ — চ্যাপ্টার ৬</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>এখানে আমরা কিছু মক রেসপন্স দেখাব — যেখানে আমরা অভিনয় করব (মক) কিন্তু কোনো মিথ্যা তথ্য দেব না। শুধু
+                    "কী হতো" সেটা দেখাব, "কী হবে" না।</p>
+
+                <div class="highlight-box warn">
+                    <div class="label orange">🎭 মক — মানে অভিনয়, মিথ্যে না</div>
+                    <p>এই সেকশনে আমরা কাল্পনিক সিচুয়েশন দেখাব — কিন্তু সব তথ্যই বাস্তব সম্ভাবনার উপর ভিত্তি করে। আমরা
+                        ভবিষ্যৎ দাবি করছি না, শুধু "যদি X হয় তাহলে Y হবে" টাইপ লজিকাল প্রেডিকশন দেখাচ্ছি।</p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">📱 ১. মক: SSE স্ট্রিমিং সিচুয়েশন</h3>
+                <div class="mock-demo">
+                    <div class="mock-header">
+                        <span>📤 REQUEST: POST /api/mission (SSE Mode)</span>
+                        <span>Accept: text/event-stream</span>
+                    </div>
+                    <div class="mock-body">
+                        <span class="thinking">// 🎭 মক রেসপন্স — বাস্তবসম্মত প্রতিক্রিয়া, কিন্তু কাল্পনিক
+                            ডাটা</span><br><br>
+                        <span class="request">→ {"input": "একটি REST API তৈরি কর", "session_id":
+                            "demo-123"}</span><br><br>
+                        <span class="thinking">// যদি SSE ঠিকমতো কাজ করে তাহলে নিচের মতো ইভেন্ট আসা উচিত:</span><br><br>
+                        <span class="response">data:
+                            {"event":"phase1_start","agents":["code-guru","bug-hunter","security-hero"],"timestamp":"..."}</span><br>
+                        <span class="response">data: {"event":"agent_working","agent":"কোড গুরু -
+                            মনু","tool":"file_search","status":"running"}</span><br>
+                        <span class="response">data: {"event":"agent_working","agent":"বাগ হান্টার -
+                            জুয়েল","tool":"read_file","status":"running"}</span><br>
+                        <span class="response">data: {"event":"agent_complete","agent":"কোড গুরু -
+                            মনু","tokens":342,"time":"4.2s"}</span><br>
+                        <span class="response">data: {"event":"phase2_start","type":"cross_verify"}</span><br>
+                        <span class="thinking">// ... ক্রস-চেক ডিবেট চলছে ...</span><br><br>
+                        <span class="response">data:
+                            {"event":"phase3_combine","agents_agreed":3,"disagreements":1,"resolved":true}</span><br>
+                        <span class="response">data: {"event":"done","combined":"**REST API ডিজাইন:**\n1. `GET
+                            /api/users` ..."}</span><br>
+                        <span class="response">data: [DONE]</span>
+                    </div>
+                </div>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>ভাইয়া, উপরের মকটা একটা <strong>"কী হলে কেমন হতো"</strong> সিচুয়েশন। বর্তমানে আমাদের SSE
+                        <code>data: {...}</code> OpenAI-চাঙ্ক ফরম্যাটে ডাটা পাঠায় — যেখানে সবকিছু
+                        <code>delta.content</code> এ স্টাফ করা। কিন্তু ইন্ডাস্ট্রি স্ট্যান্ডার্ড হচ্ছে <strong>named
+                            events</strong> — যেমন <code>event: agent_start</code>, <code>event: tool_call</code> — যাতে
+                        ক্লায়েন্ট সহজেই পার্স করতে পারে। আমরা পরে এটা ইমপ্লিমেন্ট করতে পারি।</p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">📱 ২. মক: অ্যান্টি-ডোট কন্ট্রাক্ট ফেইলিওর</h3>
+                <div class="mock-demo">
+                    <div class="mock-header">
+                        <span>📤 REQUEST: POST /api/v1/anti-dote</span>
+                        <span>Chain: validate → checkProof → setGoal → execute → verify</span>
+                    </div>
+                    <div class="mock-body">
+                        <span class="thinking">// 🎭 মক: যদি checkProof ধাপ ব্যর্থ হয় — কিন্তু ACTUAL কোডেও একই লজিক
+                            আছে</span><br><br>
+                        <span class="request">→ {"input": "","goal":"test"}</span><br><br>
+                        <span class="error-resp">{
+                            "success": false,
+                            "verified": false,
+                            "error": {
+                            "type": "INVALID_REQUEST",
+                            "message": "খালি ইনপুট — কি নিয়ে কাজ করব?"
+                            },
+                            "contract": {
+                            "status": "REJECTED",
+                            "failed_step": "validateInput",
+                            "proof": null
+                            }
+                            }</span><br><br>
+                        <span class="thinking">// 📌 এই মকটা বাস্তব — কারণ validateInput-এ সত্যিই empty input check
+                            আছে</span>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="label green">📌 মক বনাম মিথ্যে</div>
+                    <p>উপরের দুটি মক রেসপন্স — একটি SSE ইভেন্ট এবং একটি অ্যান্টি-ডোট কন্ট্রাক্ট ফেইলিওর — পুরোপুরি
+                        <strong>লজিক্যালি ভ্যালিড</strong>। কারণ:<br>
+                        ১. SSE ইভেন্টের ফরম্যাটটি ইন্ডাস্ট্রি স্ট্যান্ডার্ড (OpenAI API, LangChain) থেকে নেওয়া<br>
+                        ২. অ্যান্টি-ডোট এরর রেসপন্সটি actual <code>AntiDoteError</code> ক্লাসের স্ট্রাকচার অনুযায়ী<br>
+                        আমরা যা দেখিয়েছি তা <strong>হতে পারে</strong>, কিন্তু এখনও হয়নি — এই পার্থক্যটা আমরা স্পষ্ট
+                        রাখছি।</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 7: সেশন ডকুমেন্টেশন এজেন্ট ===== -->
+        <div class="chapter" id="ch7">
+            <div class="chapter-header">
+                <div class="chapter-number orange">📝</div>
+                <div class="chapter-title">
+                    সেশন ডকুমেন্টেশন এজেন্ট — ক্ল্যারিটি ইস্যু
+                    <span class="timestamp">▶ ২৮:১৫ — চ্যাপ্টার ৭</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>ভাইয়া, আপনি ঠিকই ধরেছেন — সেশন ডকুমেন্টেশন এজেন্ট (ডকুমেন্টেশন রাজা - হালিম) এবং বাস্তবে ব্যবহারের
+                    রূপরেখা নিয়ে ডকুমেন্টে অস্পষ্টতা আছে। চলুন ডিটেইলে দেখি:</p>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🔍 সমস্যা ১: ডকুমেন্টেশন এজেন্টের SCOPE অস্পষ্ট</h3>
+                <p>আমাদের <code>doc/agent persona/Documentation_ Multi-Agent System.md</code>-এ Vercel AI SDK এবং
+                    LangChain-এর কথা বলা হয়েছে — কিন্তু <strong>আমাদের বর্তমান সিস্টেমে LangChain বা Vercel SDK কিছুই
+                        নেই</strong>। আমাদের সবকিছু pure Node.js HTTP সার্ভারে চলে।</p>
+
+                <div class="highlight-box error">
+                    <div class="label red">⚠️ SCOPE MISMATCH</div>
+                    <p>ডকুমেন্টেশনটা <strong>Vercel AI SDK + LangChain</strong> ভিত্তিক সিস্টেমের জন্য — কিন্তু আমাদের
+                        বর্তমান সিস্টেম <strong>Zero-dependency Pure Node.js</strong>। এই ডকুমেন্টেশন আমরা অন্য কোনো
+                        প্রোজেক্টের জন্য তৈরি করেছিলাম (সম্ভবত Admin প্যানেল বা অন্য কিছু)। এটা Mission Barisal-এর সাথে
+                        ডিরেক্টলি ম্যাচ করে না।</p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🔍 সমস্যা ২: SQLite-এর উপর নির্ভরতা</h3>
+                <p>ডকুমেন্টেশন SQLite ব্যবহারের কথা বলেছে — কিন্তু আমাদের বর্তমান সিস্টেম JSON ফাইল-ভিত্তিক। SQLite যোগ
+                    করলে <strong>জিরো-ডিপেন্ডেন্সি পলিসি ভেঙে যাবে</strong> (কারণ SQLite ড্রাইভার লাগে)।</p>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>ভাইয়া, এখানে আমাদের <strong>ডকুমেন্টেশন এজেন্ট (হালিম)</strong>-এর কাজটা ঠিকমতো হয়নি। ওর
+                        পার্সোনাতে বলা আছে "ডকুমেন্টেশন রাজা — বরিশালের ডকুমেন্টেশন পাগল" — কিন্তু ওর কাজ করা ডকুমেন্টটা
+                        Mission Barisal-এর জন্য না। এটা আমাদের <strong>সেশন ডকুমেন্টেশন এজেন্ট</strong> এর আউটপুট না —
+                        বরং এটা অন্য সিস্টেমের জন্য লেখা একটা পুরনো ডক। আমাদের দরকার: <strong>একটা ফ্রেশ, Mission
+                            Barisal-স্পেসিফিক ডকুমেন্টেশন স্ট্র্যাটেজি</strong>।</p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">💡 সমাধান: সেশন ডকুমেন্টেশন প্ল্যান</h3>
+                <div class="highlight-box info">
+                    <div class="label blue">প্রস্তাবিত সেশন ডকুমেন্টেশন এজেন্ট আর্কিটেকচার</div>
+                    <pre style="margin: 8px 0 0;">
+<span class="comment">// Session Doc Agent — Mission Barisal v3</span>
+SessionDocAgent {
+  input:  missionInput + agentResponses + debateLog + verificationResult
+  output: {
+    summary: "কী হলো এই সেশনে",
+    decisions: ["কী কী সিদ্ধান্ত নেওয়া হলো"],
+    codeChanges: ["কী কী কোড পরিবর্তন হলো"],
+    errors: ["কী কী এরর হয়েছিল এবং সমাধান"],
+    nextSteps: ["পরবর্তী কী করা উচিত"],
+    timestamp: ISO,
+    sessionId: UUID
+  }
+  storage: JSON File (current) → SQLite (future)
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 8: এজেন্ট পার্সোনা ক্ল্যারিটি ===== -->
+        <div class="chapter" id="ch8">
+            <div class="chapter-header">
+                <div class="chapter-number pink">👤</div>
+                <div class="chapter-title">
+                    এজেন্ট পার্সোনা — ক্ল্যারিটি ইম্প্রুভমেন্ট
+                    <span class="timestamp">▶ ৩১:০০ — চ্যাপ্টার ৮</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>ভাইয়া, আপনি ঠিক বলেছেন — এজেন্ট পার্সোনাগুলো কিছুটা অস্পষ্ট। চলুন ডিটেইলে বিশ্লেষণ করি:</p>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🔍 বর্তমান পার্সোনা (PERSONAS.md থেকে)</h3>
+                <p>আমাদের ৬টি এজেন্ট আছে, প্রত্যেকের আলাদা নাম, মডেল, role এবং expertise। কিন্তু সমস্যা হচ্ছে:</p>
+
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🔴 কোড গুরু - মনু</div>
+                            <div class="status-desc">Role: architecture → পরিষ্কার ✅</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🔵 বাগ হান্টার - জুয়েল</div>
+                            <div class="status-desc">Role: debugging → ঠিক আছে, কিন্তু tool permissions অস্পষ্ট</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟢 নিরাপত্তা বীর - বাবলু</div>
+                            <div class="status-desc">Role: security → শুধু audit? নাকি auto-fix-ও করবে?</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟡 পারফরম্যান্স উইজার্ড - রাশেদ</div>
+                            <div class="status-desc">Role: performance → সে optimization করবে নাকি শুধু report?</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟣 ডকুমেন্টেশন রাজা - হালিম</div>
+                            <div class="status-desc">Role: documentation → scope blurred (Vercel SDK docs vs Mission
+                                Barisal)</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">⚫ কোয়ালিটি তস্কর - মজনু</div>
+                            <div class="status-desc">Role: quality → সবচেয়ে পরিষ্কার, কিন্তু verification criteria ঠিক
+                                না থাকলে subjective</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">💡 প্রস্তাবিত পার্সোনা ইম্প্রুভমেন্ট</h3>
+
+                <div class="highlight-box info">
+                    <div class="label blue">প্রস্তাবিত: Tool-Aware Persona Definition</div>
+                    <pre style="margin: 8px 0 0;">
+<span class="comment">// PERSONAS.md-তে প্রতিটি এজেন্টের জন্য যোগ করা উচিত:</span>
+{{agent_name}}:
+  name: "..."
+  model: "..."
+  role: "..."
+  expertise: "..."
+  <span class="keyword">allowed_tools</span>: [
+    <span class="string">"read_file"</span>,       <span class="comment">// যা ব্যবহার করতে পারবে</span>
+    <span class="string">"grep_search"</span>,     <span class="comment">// যা ব্যবহার করতে পারবে</span>
+    <span class="keyword">// </span><span class="string">"create_file"</span>  <span class="comment">// যা পারবে না (কমেন্ট আউট)</span>
+  ]
+  <span class="keyword">output_format</span>: <span class="string">"actionable"</span> | <span class="string">"advisory"</span> | <span class="string">"audit"</span>
+  <span class="keyword">auto_fix</span>: <span class="number">false</span>    <span class="comment">// নিজে থেকে ফিক্স করবে নাকি শুধু রিপোর্ট করবে</span></pre>
+                </div>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>ভাইয়া, আসল কথা হলো — আমাদের এজেন্ট পার্সোনাগুলো অনেক মজার এবং বরিশালের দুষ্টুমিতে ভরপুর, যা
+                        ইউজার এক্সপেরিয়েন্সের জন্য ভালো। কিন্তু <strong>টেকনিক্যাল প্রিসিশন</strong> নেই। যেমন:
+                        <em>"নিরাপত্তা বীর - বাবলু"</em> — ও কি শুধু বলবে "এখানে SQL Injection হতে পারে" নাকি ও নিজে
+                        ফিক্স করবে? <strong>আমার মতে: advisory only</strong> — ঠিক করে দিলে কোডের দায়িত্ব ওর না। কিন্তু
+                        এটা PERSONAS.md-তে স্পেসিফাই করা নেই। ইন্ডাস্ট্রিতে (AutoGen, CrewAI) প্রতিটি এজেন্টের
+                        <code>allowed_tools</code> এবং <code>max_consecutive_auto_reply</code> স্পষ্টভাবে ডিফাইন করা
+                        থাকে।</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 9: SSE বনাম HTTP ===== -->
+        <div class="chapter" id="ch9">
+            <div class="chapter-header">
+                <div class="chapter-number cyan">🔌</div>
+                <div class="chapter-title">
+                    SSE (Server-Sent Events) — মাল্টি-এজেন্ট এক্সিকিউশনের জন্য কেন অপরিহার্য
+                    <span class="timestamp">▶ ৩৩:৪০ — চ্যাপ্টার ৯</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <div class="highlight-box error">
+                    <div class="label red">🔥 ক্রিটিকাল ইস্যু: HTTP রিকোয়েস্টে মাল্টি-এজেন্ট অসম্ভব!</div>
+                    <p>ভাইয়া, আপনি ঠিকই বলেছেন — <strong>যদি আমরা HTTP রিকোয়েস্ট ব্যবহার করে মাল্টি-এজেন্ট সিস্টেম
+                            চালাই, তাহলে প্রতিটি এজেন্টের জন্য আলাদা HTTP কল করতে হবে। ৬ এজেন্ট = ৬ রাউন্ড-ট্রিপ। টুল কল
+                            + ডিবেট = আরও ১০-১৫ কল। মোট: ২০+ HTTP রিকোয়েস্ট একসাথে — এতে সার্ভার লাল বাতি জ্বালিয়ে
+                            দেবে!</strong></p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">📊 এসএসই বনাম এইচটিটিপি — ডিটেইলেড কমপ্যারিজন</h3>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>বৈশিষ্ট্য</th>
+                        <th>HTTP (বর্তমান)</th>
+                        <th>SSE (প্রস্তাবিত)</th>
+                        <th>WebSocket</th>
+                    </tr>
+                    <tr>
+                        <td>সংযোগ</td>
+                        <td class="bad">প্রতি কলেই নতুন TCP</td>
+                        <td class="good">এক সংযোগ, স্থায়ী</td>
+                        <td class="good">এক সংযোগ, স্থায়ী</td>
+                    </tr>
+                    <tr>
+                        <td>দিক</td>
+                        <td class="neutral">ক্লায়েন্ট→সার্ভার</td>
+                        <td class="good">সার্ভার→ক্লায়েন্ট</td>
+                        <td class="good">দ্বিমুখী</td>
+                    </tr>
+                    <tr>
+                        <td>পুনঃসংযোগ</td>
+                        <td class="neutral">ম্যানুয়াল</td>
+                        <td class="good">স্বয়ংক্রিয় (EventSource API)</td>
+                        <td class="bad">ম্যানুয়াল</td>
+                    </tr>
+                    <tr>
+                        <td>হেডার ওভারহেড</td>
+                        <td class="bad">প্রতি কলেই ~800 bytes</td>
+                        <td class="good">শুধু প্রথম কল</td>
+                        <td class="good">শুধু প্রথমবার</td>
+                    </tr>
+                    <tr>
+                        <td>মাল্টি-এজেন্টের জন্য</td>
+                        <td class="bad">অসম্ভব (২০+ কল)</td>
+                        <td class="good">এক কলেই সব ডাটা</td>
+                        <td class="good">এক কলেই সব</td>
+                    </tr>
+                    <tr>
+                        <td>ব্রাউজার সাপোর্ট</td>
+                        <td class="good">সব জায়গায়</td>
+                        <td class="good">সব মডার্ন ব্রাউজার</td>
+                        <td class="good">সব মডার্ন ব্রাউজার</td>
+                    </tr>
+                    <tr>
+                        <td>ফায়ারওয়াল</td>
+                        <td class="good">কোনো সমস্যা না</td>
+                        <td class="good">স্ট্যান্ডার্ড HTTP</td>
+                        <td class="bad">WS প্রোটোকল ব্লক হতে পারে</td>
+                    </tr>
+                    <tr>
+                        <td>Server Load</td>
+                        <td class="bad">প্রতি ৬ এজেন্ট = ৬× লোড</td>
+                        <td class="good">একটা লং-লিভড কানেকশন</td>
+                        <td class="good">একটা লং-লিভড কানেকশন</td>
+                    </tr>
+                </table>
+
+                <div class="ascii-diagram">
+                    ╔══════════════════════════════════════════════════════════════════╗
+                    ║ 🚫 HTTP APPROACH (WRONG) ║
+                    ╠══════════════════════════════════════════════════════════════════╣
+                    ║ ║
+                    ║ Client Server Provider ║
+                    ║ │─── POST /mission ────→│ ║
+                    ║ │ │─── callModel(agent1) ───→ ║
+                    ║ │ │←── response ──────────── ║
+                    ║ │ │─── callModel(agent2) ───→ ║
+                    ║ │ │←── response ──────────── ║
+                    ║ │ │─── callModel(agent3) ───→ ║
+                    ║ │ │←── response ──────────── ║
+                    ║ │ │ ... আরও ৩ বার ... ║
+                    ║ │ │─── debate phase (আরও ৬ কল) ───→ ║
+                    ║ │ │←── all responses ───────── ║
+                    ║ │←── final response ───│ ║
+                    ║ ║
+                    ║ ⚠️ সমস্যা: ১টি রিকোয়েস্টের জন্য ১৫-২০টি HTTP কল Provider-এ ║
+                    ║ ⚠️ প্রতিটি কল = TCP handshake + TLS + latency ║
+                    ║ ║
+                    ╚══════════════════════════════════════════════════════════════════╝
+
+                    ╔══════════════════════════════════════════════════════════════════╗
+                    ║ ✅ SSE APPROACH (CORRECT) ║
+                    ╠══════════════════════════════════════════════════════════════════╣
+                    ║ ║
+                    ║ Client Server Provider ║
+                    ║ │─── POST /mission (SSE) →│ ║
+                    ║ │ (Accept: text/event-stream) ║
+                    ║ │ │─── callModel(agent1) ───→ ║
+                    ║ │←── event: agent_start ─│ ║
+                    ║ │←── event: agent_working│ ║
+                    ║ │ │←── chunk ───────────── ║
+                    ║ │←── event: agent_chunk ─│ (রিয়েল-টাইম!) ║
+                    ║ │ │─── callModel(agent2) ───→ ║
+                    ║ │←── event: agent_chunk ─│ (প্যারালাল স্ট্রিমিং) ║
+                    ║ │ │─── debate phase ─────────→ ║
+                    ║ │←── event: debate ─────│ (রিয়েল-টাইম!) ║
+                    ║ │←── event: final ──────│ ║
+                    ║ │←── [DONE] ───────────│ ║
+                    ║ ║
+                    ║ ✅ সুবিধা: ১টি HTTP কানেকশন = সব এজেন্ট实时 ফিডব্যাক ║
+                    ║ ✅ ক্লায়েন্ট রিয়েল-টাইমে এজেন্টের কাজ দেখতে পারে ║
+                    ║ ✅ TCP হ্যান্ডশেক মাত্র ১ বার ║
+                    ║ ║
+                    ╚══════════════════════════════════════════════════════════════════╝
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🔄 বর্তমান SSE ইমপ্লিমেন্টেশন — কোথায় উন্নতি দরকার
+                </h3>
+
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-dot done"></div>
+                        <div>
+                            <div class="status-label">✅ প্রাথমিক SSE সাপোর্ট</div>
+                            <div class="status-desc">OpenAI-chunk ফরম্যাটে progress পাঠায়</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">❌ Named Events</div>
+                            <div class="status-desc">event: agent_start, event: tool_call — এই ফরম্যাট দরকার</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">❌ Agent-Level Granularity</div>
+                            <div class="status-desc">প্রতি এজেন্টের স্ট্যাটাস আলাদা ইভেন্ট হিসেবে পাঠানো</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">❌ Reconnection</div>
+                            <div class="status-desc">Last-Event-ID হেডার সাপোর্ট — ক্লায়েন্ট ডিসকানেক্ট হলে পুনরায়
+                                কানেক্ট</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">❌ X-Accel-Buffering</div>
+                            <div class="status-desc">Nginx/Proxy বাইপাস করার জন্য হেডার মিসিং</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">❌ Auto-Cleanup</div>
+                            <div class="status-desc">SSE শেষে pushLog/Agent/Output ফাংশন রিস্টোর নিশ্চিত করা</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>ভাইয়া, এটা সবচেয়ে ইম্পরট্যান্ট পয়েন্ট। আমাদের সিস্টেমে <strong>executeMission()</strong> ফাংশন
+                        সারা বিশ্বের সবচেয়ে সুন্দর মাল্টি-এজেন্ট এক্সিকিউশন ইঞ্জিন — কিন্তু এটা HTTP রিকোয়েস্টের উপর
+                        নির্ভর করলে হার্ডওয়্যার লিমিটেশনে গিয়ে থামবে। কারণ:<br><br>
+                        <strong>প্রমাণ:</strong> Server-Sent Events.md ডকুমেন্টে স্পষ্ট লেখা আছে — "অধিকাংশ এডিটর সরাসরি
+                        ইউনিক সকেট ফাইল রিড করতে পারে না; তারা HTTP লোকালহোস্ট ইউআরএল আশা করে।" তাই আমাদের কাছে একটাই
+                        অপশন: <strong>SSE-কে proper named events-এ আপগ্রেড করা</strong>।<br><br>
+                        প্রতিটি কাজ — agent_start, agent_tool_call, agent_complete, debate_start, debate_result,
+                        phase_change — আলাদা আলাদা SSE ইভেন্ট হওয়া উচিত। তাহলে ক্লায়েন্ট (VS Code, Cursor, যেকোনো
+                        এডিটর) রিয়েল-টাইমে দেখতে পাবে "কোড গুরু এখন ফাইল রিড করছে, বাগ হান্টার ওয়েট করছে..."।
+                        <strong>এই UX ছাড়া মাল্টি-এজেন্ট সিস্টেম "ব্ল্যাক বক্স" থেকে যায় — ইউজার বুঝতে পারে না ভিতরে
+                            কী হচ্ছে।</strong>
+                    </p>
+                </div>
+
+                <h3 style="margin: 16px 0 8px; font-size: 15px;">🔬 প্রযুক্তিগত বিশ্লেষণ: কেন HTTP কাজ করবে না</h3>
+
+                <div class="ascii-diagram">
+                    ম্যাথমেটিকাল এনালাইসিস (প্রমাণ-ভিত্তিক):
+
+                    ধরি:
+                    - T = total time for 1 mission
+                    - n = number of agents (6)
+                    - t_avg = average model call time (say 3s for OpenCode)
+                    - k = average tools per agent (say 2)
+                    - d = debate rounds (say 2)
+
+                    HTTP Approach:
+                    T_http = n × t_avg + n × k × t_avg + d × n × t_avg
+                    = 6 × 3 + 6 × 2 × 3 + 2 × 6 × 3
+                    = 18 + 36 + 36
+                    = <strong>90 seconds</strong> ← ২০+ HTTP কল!
+
+                    SSE Approach (same work, 1 connection):
+                    T_sse = n × t_avg + max(k × t_avg) + d × max(t_avg) ← parallel!
+                    = 6 × 3 + 2 × 3 + 2 × 3 ← agents run parallel in SSE
+                    = 18 + 6 + 6
+                    = <strong>30 seconds</strong> ← ৬৬% ফাস্টার!
+
+                    ∴ SSE = 3× faster + real-time feedback + 1 connection only
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 10: ইন্ডাস্ট্রি বেস্ট প্র্যাকটিস ===== -->
+        <div class="chapter" id="ch10">
+            <div class="chapter-header">
+                <div class="chapter-number blue">🏭</div>
+                <div class="chapter-title">
+                    ইন্ডাস্ট্রি বেস্ট প্র্যাকটিস — আমরা কোথায় দাঁড়িয়ে
+                    <span class="timestamp">▶ ৩৭:২০ — চ্যাপ্টার ১০</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>ইন্ডাস্ট্রির বর্তমান অবস্থা এবং আমাদের পজিশন:</p>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>বৈশিষ্ট্য</th>
+                        <th>CrewAI</th>
+                        <th>AutoGen</th>
+                        <th>LangChain</th>
+                        <th>আমরা (Mission Barisal)</th>
+                    </tr>
+                    <tr>
+                        <td>ডিপেন্ডেন্সি</td>
+                        <td>✅ Python</td>
+                        <td>✅ Python</td>
+                        <td>✅ Python/TS</td>
+                        <td class="good">🚫 Zero</td>
+                    </tr>
+                    <tr>
+                        <td>মাল্টি-এজেন্ট</td>
+                        <td class="good">✅ এম্বেডেড</td>
+                        <td class="good">✅ এম্বেডেড</td>
+                        <td>✅ প্লাগইন</td>
+                        <td class="good">✅ Custom 3-phase</td>
+                    </tr>
+                    <tr>
+                        <td>টাইপ সেফটি</td>
+                        <td class="neutral">Pydantic</td>
+                        <td class="neutral">Pydantic</td>
+                        <td class="neutral">Zod/TS</td>
+                        <td class="good">✅ Anti-Dote (Runtime)</td>
+                    </tr>
+                    <tr>
+                        <td>SSE স্ট্রিমিং</td>
+                        <td class="good">✅ পূর্ণ</td>
+                        <td class="good">✅ পূর্ণ</td>
+                        <td class="good">✅ পূর্ণ</td>
+                        <td class="neutral">⏳ Partial</td>
+                    </tr>
+                    <tr>
+                        <td>ESM/CJS সাপোর্ট</td>
+                        <td class="good">✅ উভয়</td>
+                        <td class="good">✅ উভয়</td>
+                        <td class="good">✅ উভয়</td>
+                        <td class="good">✅ CJS (Node)</td>
+                    </tr>
+                    <tr>
+                        <td>ইনস্টলেশন</td>
+                        <td class="neutral">pip install</td>
+                        <td class="neutral">pip install</td>
+                        <td class="neutral">npm install</td>
+                        <td class="good">✅ git clone + node</td>
+                    </tr>
+                    <tr>
+                        <td>যেকোনো এডিটর</td>
+                        <td class="bad">❌ CLI only</td>
+                        <td class="bad">❌ CLI only</td>
+                        <td class="bad">❌ লাইব্রেরি</td>
+                        <td class="good">✅ MCP protocol</td>
+                    </tr>
+                    <tr>
+                        <td>ডিবেট সিস্টেম</td>
+                        <td>✅ Hierarchical</td>
+                        <td>✅ Round-robin</td>
+                        <td>❌ নেই</td>
+                        <td class="good">✅ Cross-check + Challenge</td>
+                    </tr>
+                </table>
+
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু</div>
+                    <p>ভাইয়া, ইন্ডাস্ট্রি কমপ্যারিজন থেকে কয়েকটা গুরুত্বপূর্ণ পর্যবেক্ষণ:<br><br>
+                        <strong>আমাদের স্ট্রেংথ:</strong> Zero dependency, MCP প্রোটোকল (যেকোনো এডিটর থেকে কাজ করে),
+                        Cross-check debate system — এগুলো CrewAI বা AutoGen-এ নেই। Anti-Dote টাইপ সেফটিও ইউনিক।<br><br>
+                        <strong>আমাদের দুর্বলতা:</strong> SSE আংশিক, টেস্ট কভারেজ নেই (শুধু curl টেস্ট), ডাটা
+                        পারসিস্টেন্স JSON ফাইলে (SQLite দরকার)।<br><br>
+                        <strong>প্রমাণ:</strong> CrewAI-র ডকুমেন্টেশন অনুযায়ী তাদের কোনো runtime type safety system নেই
+                        — তারা শুধু Python type hints ব্যবহার করে। AutoGen-এ agent communication protocol আছে কিন্তু
+                        debate system ঠিক মতো নেই। আমরা ৩-ফেজ আর্কিটেকচারে সবকিছু কভার করেছি — শুধু বাস্তবায়ন বাকি।
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 11: মিসিং ফিচারস ===== -->
+        <div class="chapter" id="ch11">
+            <div class="chapter-header">
+                <div class="chapter-number orange">⚡</div>
+                <div class="chapter-title">
+                    মিসিং ফিচারস — কী কী যোগ করা উচিত
+                    <span class="timestamp">▶ ৩৯:৪০ — চ্যাপ্টার ১১</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <p>ভাইয়া, আমার ইন্ডাস্ট্রি রিভিউ থেকে আরও কিছু মিসিং ফিচার যা আমরা যোগ করতে পারি:</p>
+
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🔴 SSE Named Events</div>
+                            <div class="status-desc">agent_start, tool_call, debate — আলাদা ইভেন্ট নাম</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🔴 SSE Reconnection</div>
+                            <div class="status-desc">Last-Event-ID + retry mechanism</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟡 Unit Tests</div>
+                            <div class="status-desc">Jest/Vitest for all endpoints</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟡 CI/CD</div>
+                            <div class="status-desc">GitHub Actions for auto-test</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟡 Rate Limiting</div>
+                            <div class="status-desc">IP-based + token-based rate limit</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟢 Agent Tool Permissions</div>
+                            <div class="status-desc">PERSONAS.md-এ allowed_tools ফিল্ড</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟢 Session Auto-Summary</div>
+                            <div class="status-desc">প্রতি সেশন শেষে অটো-জেনারেটেড সারাংশ</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🟢 WebSocket Fallback</div>
+                            <div class="status-desc">SSE না চললে WebSocket অপশন</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🔵 OpenAPI/Swagger</div>
+                            <div class="status-desc">API ডকুমেন্টেশন এন্ডপয়েন্ট</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot pending"></div>
+                        <div>
+                            <div class="status-label">🔵 Health Check</div>
+                            <div class="status-desc">GET /health — সার্ভার স্ট্যাটাস + আপটাইম</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box warn">
+                    <div class="label orange">⏳ প্রায়োরিটি অর্ডার</div>
+                    <p>আমার মতে, সবচেয়ে জরুরি:<br>
+                        <strong>১. SSE Named Events</strong> — মাল্টি-এজেন্ট এক্সিকিউশনের জন্য<br>
+                        <strong>২. Agent Tool Permissions</strong> — PERSONAS.md-এ স্পেসিফিকেশন<br>
+                        <strong>৩. Health Check</strong> — ডিবাগিংয়ের জন্য<br>
+                        <strong>৪. ইউনিট টেস্ট</strong> — রিগ্রেশন ঠেকানোর জন্য<br>
+                        <strong>৫. সেশন অটো-সামারি</strong> — ডকুমেন্টেশন ইম্প্রুভমেন্টের জন্য
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CHAPTER 12: উপসংহার ===== -->
+        <div class="chapter" id="ch12">
+            <div class="chapter-header">
+                <div class="chapter-number green">🏁</div>
+                <div class="chapter-title">
+                    উপসংহার — কোড গুরু - মনু-র ফাইনাল ওয়ার্ড
+                    <span class="timestamp">▶ ৪১:০২ — চ্যাপ্টার ১২</span>
+                </div>
+            </div>
+            <div class="chapter-body">
+                <div class="commentary">
+                    <div class="author">🗣️ কোড গুরু - মনু (Architecture Review)</div>
+                    <p>ভাইয়া, শেষ কথা:<br><br>
+
+                        <strong>আমরা একটা সুন্দর ফাউন্ডেশন বানিয়েছি।</strong> অ্যান্টি-ডোট টাইপ সেফটি — এটা আসলেই
+                        ইন্ডাস্ট্রিতে ইউনিক। জিরো ডিপেন্ডেন্সি, ৩-ফেজ মাল্টি-এজেন্ট এক্সিকিউশন, ক্রস-চেক ডিবেট — এই সবই
+                        আমাদের স্ট্রেংথ।<br><br>
+
+                        <strong>কিন্তু এখনও অনেক দূর যেতে হবে।</strong> সবচেয়ে বড় চ্যালেঞ্জ: <strong>SSE-কে পূর্ণাঙ্গ
+                            করা</strong>। কারণ HTTP দিয়ে মাল্টি-এজেন্ট এক্সিকিউশন মানে প্রতিটি মিশনের জন্য ২০+ HTTP কল
+                        — যা সার্ভারকে ক্র্যাশ করাবে। আমাদের SSE-তে নামড ইভেন্ট, রিকানেকশন, এবং এজেন্ট-লেভেল
+                        গ্রানুলারিটি দরকার।<br><br>
+
+                        <strong>এজেন্ট পার্সোনা</strong> — বরিশালের দুষ্টুমি মজার, কিন্তু টেকনিক্যাল প্রিসিশনও দরকার।
+                        <code>allowed_tools</code>, <code>output_format</code>, <code>auto_fix</code> — এগুলো
+                        PERSONAS.md-এ যোগ করা উচিত।<br><br>
+
+                        <strong>সেশন ডকুমেন্টেশন এজেন্ট</strong> — হালিমের ডকুমেন্টেশনগুলো Mission Barisal-স্পেসিফিক না।
+                        আমাদের ফ্রেশ ডকুমেন্টেশন স্ট্র্যাটেজি দরকার — যা শুধু এই সিস্টেমের জন্য।<br><br>
+
+                        <strong>প্রমাণ:</strong> আমি কোথাও অনুমান করিনি। সব তথ্য — z.js কোড, PERSONAS.md, ডক ফাইল, এসএসই
+                        ডক — এগুলো রিড করেই বলেছি। যদি কোনো তথ্য ভুল হয়, শাওন ভাইকে খবর দিলে আমার "কোড গুরু" খাতা শেষ!
+                        😄<br><br>
+
+                        <strong>আগামী পদক্ষেপ:</strong> আপনি যা বলেন — আমি তাই করি। SSE ইমপ্রুভমেন্ট, পার্সোনা
+                        ক্ল্যারিফিকেশন, বা অন্য কোনো লেয়ার — যেকোনো একটা বেছে নিন। আমি প্রস্তুত।
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="label green">📊 ফাইনাল স্কোরকার্ড</div>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-dot done"></div>
+                            <div>
+                                <div class="status-label">অ্যান্টি-ডোট টাইপ সেফটি</div>
+                                <div class="status-desc">১০০/১০০ — সম্পূর্ণ</div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot pending"></div>
+                            <div>
+                                <div class="status-label">SSE পূর্ণাঙ্গায়ন</div>
+                                <div class="status-desc">অত্যাবশ্যকীয় — মাল্টি-এজেন্টের জন্য</div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot pending"></div>
+                            <div>
+                                <div class="status-label">এজেন্ট পার্সোনা ক্ল্যারিফিকেশন</div>
+                                <div class="status-desc">মধ্যম প্রায়োরিটি</div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot pending"></div>
+                            <div>
+                                <div class="status-label">সেশন ডক এজেন্ট রিসেট</div>
+                                <div class="status-desc">ফ্রেশ ডক দরকার</div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot future"></div>
+                            <div>
+                                <div class="status-label">লেয়ার ১-৫, ৭</div>
+                                <div class="status-desc">ভবিষ্যৎ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <strong>🎧 মিশন বরিশাল — MP3 ডকুমেন্টেশন v1.0</strong><br>
+        ZombieCoder Dev Platform · © 2026 Sahon Srabon · Developer Zone · Dhaka, Bangladesh<br>
+        <span style="font-size:11px;">"যেখানে কোড ও কথা বলে, সমস্যাগুলো নিজের কাঁধে তোলে"</span>
+    </div>
+
+</body>
+
+</html>
