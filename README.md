@@ -63,12 +63,12 @@ mission-barisal/                     # Monorepo root
 
 The system supports **4 provider competition** with automatic failover:
 
-| Provider     | Priority     | Base URL                     |
-| ------------ | ------------ | ---------------------------- |
-| **opencode** | 1 (highest)  | `https://opencode.ai/zen/v1` |
-| **ustad**    | 2            | `ustad` provider             |
-| **groq**     | 3            | `groq` provider              |
-| **gemini**   | 4 (fallback) | `gemini` provider            |
+| Provider         | Priority     | Base URL                                           |
+| ---------------- | ------------ | -------------------------------------------------- |
+| **opencode**     | 1 (highest)  | `https://opencode.ai/zen/v1`                       |
+| **custom_proxy** | 2            | `http://localhost:8080/v1`                         |
+| **groq**         | 3            | `https://api.groq.com/openai/v1`                   |
+| **gemini**       | 4 (fallback) | `https://generativelanguage.googleapis.com/v1beta` |
 
 ### Anti-Dote Type Safety
 
@@ -398,8 +398,9 @@ MIT License — See `LICENSE` file for details.
 ## 👨‍💻 Developer
 
 **Sahon Srabon (ZombieCoder)**  
-📍 Dhaka, Bangladesh  
-🐙 GitHub: [@zombiecoderbd](https://github.com/zombiecoderbd)
+📍 Barisal, Bangladesh  
+🐙 GitHub: [@zombiecoderbd](https://github.com/zombiecoderbd)  
+🏠 At Home
 
 ---
 
