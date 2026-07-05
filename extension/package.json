@@ -133,6 +133,12 @@
         "title": "Scan Workspace for SSOT",
         "icon": "$(search)",
         "category": "Mission Barisal"
+      },
+      {
+        "command": "mission-barisal.diagnostics",
+        "title": "Run Diagnostics",
+        "icon": "$(beaker)",
+        "category": "Mission Barisal"
       }
     ],
     "viewsContainers": {

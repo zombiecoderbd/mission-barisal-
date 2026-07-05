@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কেস স্টাডি — Mission Barisal v3</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --border: #334155;
+            --accent: #22d3ee;
+            --success: #22c55e;
+            --warn: #f59e0b;
+            --error: #ef4444;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: .5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #f8fafc;
+            margin: 2rem 0 1rem;
+            padding-bottom: .5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            color: var(--accent);
+            margin: 1.5rem 0 .75rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: .9rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: .2rem .6rem;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            margin-right: .4rem;
+        }
+
+        .badge-issue {
+            background: rgba(239, 68, 68, .15);
+            color: var(--error);
+        }
+
+        .badge-fixed {
+            background: rgba(34, 197, 94, .15);
+            color: var(--success);
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, .15);
+            color: var(--warn);
+        }
+
+        .badge-info {
+            background: rgba(34, 211, 238, .15);
+            color: var(--accent);
+        }
+
+        .status-ok {
+            color: var(--success);
+        }
+
+        .status-fail {
+            color: var(--error);
+        }
+
+        .status-warn {
+            color: var(--warn);
+        }
+
+        ul,
+        ol {
+            padding-left: 1.5rem;
+            margin: .5rem 0;
+        }
+
+        li {
+            margin: .3rem 0;
+        }
+
+        code {
+            background: rgba(255, 255, 255, .08);
+            padding: .15rem .4rem;
+            border-radius: 4px;
+            font-size: .88em;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, .3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-size: .85rem;
+            margin: .75rem 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--accent);
+            font-style: italic;
+            color: var(--muted);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th,
+        td {
+            padding: .6rem .8rem;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            background: rgba(34, 211, 238, .1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .checkbox {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: .4rem;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .check-done {
+            background: var(--success);
+            color: white;
+        }
+
+        .check-pending {
+            background: var(--warn);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>🧟 Mission Barisal v3 — কেস স্টাডি</h1>
+        <div class="meta">
+            <strong>ভাষা:</strong> বাংলা (Bangla) &nbsp;|&nbsp;
+            <strong>সংস্করণ:</strong> 3.0.0 &nbsp;|&nbsp;
+            <strong>তারিখ:</strong> জুলাই ২০২৬ &nbsp;|&nbsp;
+            <strong>লেখক:</strong> Sahon Srabon (ZombieCoder)
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <h2>📌 প্রকল্প সংক্ষেপ</h2>
+        <div class="card">
+            <p><strong>Mission Barisal v3</strong> একটি জিরো-ডিপেন্ডেন্সি, সিঙ্গেল-ফাইল Node.js সার্ভার যা <strong>৬টি
+                    AI Agent</strong>-কে অর্কেস্ট্রেট করে। প্রতিটি এজেন্টের আলাদা বাংলা পার্সোনা, এক্সপার্টাইজ এবং মডেল
+                অ্যাসাইনমেন্ট আছে। এজেন্টরা প্রশ্ন নিয়ে ডিবেট করে, ক্রস-ভেরিফাই করে এবং কনসেনসাস আউটপুট তৈরি করে।</p>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <h2>✅ দাবি (Claims) — যা কাজ করে</h2>
+
+        <div class="card">
+            <h3><span class="checkbox check-done">✓</span> ১. জিরো-ডিপেন্ডেন্সি আর্কিটেকচার</h3>
+            <p><span class="badge badge-fixed">ভেরিফাইড</span> সার্ভার <code>z.js</code> সম্পূর্ণরূপে শুধুমাত্র Node.js
+                native modules (<code>http</code>, <code>https</code>, <code>crypto</code>, <code>fs</code>,
+                <code>path</code>, <code>url</code>) ব্যবহার করে। কোনো npm dependency নেই।</p>
+            <pre>curl -s http://localhost:3000/health | python3 -m json.tool</pre>
+            <p><span class="status-ok">✅ রিটার্ন করে:</span>
+                <code>{"healthy":true,"agents":6,"models":17,"uptime":3495}</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="checkbox check-done">✓</span> ২. ৬টি বাংলা এজেন্ট</h3>
+            <table>
+                <tr>
+                    <th>Agent</th>
+                    <th>বাংলা নাম</th>
+                    <th>Role</th>
+                    <th>Model</th>
+                </tr>
+                <tr>
+                    <td>code-guru</td>
+                    <td>🔴 কোড গুরু - মনু</td>
+                    <td>Architecture</td>
+                    <td>deepseek-v4-flash-free</td>
+                </tr>
+                <tr>
+                    <td>bug-hunter</td>
+                    <td>🔵 বাগ হান্টার - জারিন</td>
+                    <td>Debugging</td>
+                    <td>mimo-v2.5-free</td>
+                </tr>
+                <tr>
+                    <td>security-hero</td>
+                    <td>🟢 সিকিউরিটি হিরো - বৃষ্টি</td>
+                    <td>Security</td>
+                    <td>deepseek-v4-flash-free</td>
+                </tr>
+                <tr>
+                    <td>perf-wizard</td>
+                    <td>🟡 পারফরম্যান্স উইজার্ড - রাশেদ</td>
+                    <td>Performance</td>
+                    <td>deepseek-v4-flash-free</td>
+                </tr>
+                <tr>
+                    <td>doc-king</td>
+                    <td>📖 ডকুমেন্টেশন রাজা - হালিম</td>
+                    <td>Documentation</td>
+                    <td>big-pickle</td>
+                </tr>
+                <tr>
+                    <td>qa-tyrant</td>
+                    <td>⚫ কোয়ালিটি তস্কর - মজনু</td>
+                    <td>Quality</td>
+                    <td>deepseek-v4-flash-free</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3><span class="checkbox check-done">✓</span> ৩. কম্পিটিশন রাউটার (৪ প্রোভাইডার)</h3>
+            <table>
+                <tr>
+                    <th>Provider</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>OpenCode</td>
+                    <td>১</td>
+                    <td class="status-ok">✅ Active</td>
+                </tr>
+                <tr>
+                    <td>Custom Proxy</td>
+                    <td>২</td>
+                    <td class="status-warn">⚡ পরিবর্তিত (was Ustad)</td>
+                </tr>
+                <tr>
+                    <td>Groq</td>
+                    <td>৩</td>
+                    <td class="status-ok">✅ Active</td>
+                </tr>
+                <tr>
+                    <td>Gemini</td>
+                    <td>৪</td>
+                    <td class="status-ok">✅ Active</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3><span class="checkbox check-done">✓</span> ৪. API এন্ডপয়েন্টসমূহ</h3>
+            <table>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td><code>/health</code></td>
+                    <td>GET</td>
+                    <td class="status-ok">✅ Verified</td>
+                </tr>
+                <tr>
+                    <td><code>/api/agents</code></td>
+                    <td>GET</td>
+                    <td class="status-ok">✅ Verified</td>
+                </tr>
+                <tr>
+                    <td><code>/api/mission</code></td>
+                    <td>POST (SSE)</td>
+                    <td class="status-ok">✅ Verified</td>
+                </tr>
+                <tr>
+                    <td><code>/v1/chat/completions</code></td>
+                    <td>POST</td>
+                    <td class="status-ok">✅ Verified</td>
+                </tr>
+                <tr>
+                    <td><code>/mcp</code></td>
+                    <td>POST (JSON-RPC)</td>
+                    <td class="status-ok">✅ Verified</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3><span class="checkbox check-done">✓</span> ৫. MCP প্রোটোকল (৯টি টুল)</h3>
+            <table>
+                <tr>
+                    <th>Tool</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><code>read_file</code></td>
+                    <td>Read file contents from workspace</td>
+                </tr>
+                <tr>
+                    <td><code>write_file</code></td>
+                    <td>Write content to a file</td>
+                </tr>
+                <tr>
+                    <td><code>set_working_dir</code></td>
+                    <td>Set working directory</td>
+                </tr>
+                <tr>
+                    <td><code>get_working_dir</code></td>
+                    <td>Get current working directory</td>
+                </tr>
+                <tr>
+                    <td><code>web_search</code></td>
+                    <td>Search the web</td>
+                </tr>
+                <tr>
+                    <td><code>agent_mission</code></td>
+                    <td>Execute multi-agent mission</td>
+                </tr>
+                <tr>
+                    <td><code>agent_single</code></td>
+                    <td>Execute single agent</td>
+                </tr>
+                <tr>
+                    <td><code>get_memory</code></td>
+                    <td>Read agent memory</td>
+                </tr>
+                <tr>
+                    <td><code>read_ssot</code></td>
+                    <td>Read SSOT document</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3><span class="checkbox check-done">✓</span> ৬. VS Code Extension Integration</h3>
+            <p><span class="badge badge-fixed">ইনস্টলড</span> Mission Barisal extension v1.0.0 ইন্সটল এবং অ্যাক্টিভেটেড।
+            </p>
+            <ul>
+                <li><span class="status-ok">✅</span> LanguageModelChatProvider — ৭ মডেল</li>
+                <li><span class="status-ok">✅</span> Webview Panel — Agent status chips</li>
+                <li><span class="status-ok">✅</span> TreeView — Agent explorer</li>
+                <li><span class="status-warn">⚠️</span> Copilot Chat integration — মডেল দেখা যায়, ইউজ এখনও টেস্ট
+                    pending</li>
+            </ul>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <h2>🔴 পরিচিত ইস্যু (Known Issues) — চেক করতে হবে</h2>
+
+        <div class="card">
+            <h3><span class="badge badge-pending">PENDING</span> Issue 1: Copilot Chat মডেল না দেখা যাওয়া</h3>
+            <p><strong>সমস্যা:</strong> Extension-এর LanguageModelChatProvider মডেলগুলো Copilot Chat-এর মডেল পিকার-এ
+                দেখা যায় না বা দেখালেও কাজ করে না।</p>
+            <p><strong>সম্ভাব্য কারণ:</strong></p>
+            <ul>
+                <li>VS Code 1.120.0-এ LanguageModelChatProvider API পরিবর্তিত হতে পারে</li>
+                <li><code>onDidChangeLanguageModelChatInformation</code> event সঠিকভাবে কাজ নাও করতে পারে</li>
+                <li>Extension activation timing issue — Copilot Chat query করে extension activate হওয়ার আগেই</li>
+            </ul>
+            <p><strong>চেক করতে হবে:</strong></p>
+            <ul>
+                <li><code>vscode.lm.registerLanguageModelChatProvider</code> API কি রানটাইমে exists?</li>
+                <li>Extension activation log চেক করুন (Output → Mission Barisal)</li>
+                <li>VS Code Developer Tools-এ console error চেক করুন</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="badge badge-pending">PENDING</span> Issue 2: chatLanguageModels.json Conflict</h3>
+            <p><strong>সমস্যা:</strong> <code>~/.config/Code/User/chatLanguageModels.json</code>-এ Mission Barisal entry
+                থাকলে extension-এর provider-এর সাথে conflict হয়।</p>
+            <p><strong>বর্তমান অবস্থা:</strong> chatLanguageModels.json থেকে Mission Barisal entry সরানো হয়েছে। এখন
+                extension-এর মাধ্যমেই মডেল দেখা যাচ্ছে।</p>
+            <p><strong>চেক করতে হবে:</strong></p>
+            <ul>
+                <li>chatLanguageModels.json ক্লিন — ৪ টি entry, Mission Barisal নেই</li>
+                <li>Extension-এর provider models Copilot Chat-এ visible কিনা</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="badge badge-pending">PENDING</span> Issue 3: Diagnostic Command</h3>
+            <p><strong>বর্তমান অবস্থা:</strong> "Mission Barisal: Run Diagnostics" কমান্ড যোগ করা হয়েছে। এটি
+                extension-এর প্রোভাইডার রেজিস্ট্রেশন এবং সার্ভার কানেকশন টেস্ট করে।</p>
+            <p><strong>চেক করতে হবে:</strong></p>
+            <ul>
+                <li>কমান্ড প্যালেট থেকে ডায়াগনস্টিক রান করুন</li>
+                <li>আউটপুট চেক করুন — সার্ভার connected? LM API exists?</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="badge badge-pending">PENDING</span> Issue 4: VS Code Publisher Verification</h3>
+            <p><strong>সমস্যা:</strong> zombie-coder পাবলিশার ভেরিফাইড না হওয়ায় VS Code Mission Barisal-কে "অবিশ্বস্ত"
+                প্রোভাইডার হিসেবে দেখাতে পারে।</p>
+            <p><strong>চেক করতে হবে:</strong></p>
+            <ul>
+                <li>VS Code-এ extension এর পাশে কোন warning/error icon আছে কিনা</li>
+                <li>VS Code Marketplace-এ publish করা দরকার কিনা</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="badge badge-pending">PENDING</span> Issue 5: Cache_control Artifact</h3>
+            <p><strong>সমস্যা:</strong> Terminal এবং tool আউটপুটে
+                <code>{$mid:24,mimeType:"cache_control",data:"ZXBoZW1lcmFs"}</code> নামক আর্টিফ্যাক্ট দেখা যাচ্ছে। এটি
+                VS Code-এর অভ্যন্তরীণ ক্যাশিং সিস্টেমের artifact, ফাইলের কোনো ক্ষতি করেনি।</p>
+            <p><strong>চেক করতে হবে:</strong></p>
+            <ul>
+                <li>VS Code আপডেট করলে সমস্যা যায় কিনা</li>
+                <li>অথবা VS Code রিস্টার্ট করলে ক্লিয়ার হয় কিনা</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="badge badge-pending">PENDING</span> Issue 6: Audio File Size</h3>
+            <p><strong>সমস্যা:</strong> doc/ ফোল্ডারে MP3 ফাইলগুলো (২-৩ MB) গিট রিপোজিটরিতে push করা হয়নি (.gitignore-এ
+                *.mp3 excluded)।</p>
+            <p><strong>চেক করতে হবে:</strong></p>
+            <ul>
+                <li>Git LFS ব্যবহার করে MP3 ফাইলগুলো ট্র্যাক করা যাবে কিনা</li>
+                <li>অথবা YouTube/SoundCloud-এ আপলোড করে লিংক দিন</li>
+            </ul>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <h2>📋 চেকলিস্ট (To-Do)</h2>
+
+        <div class="card">
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>Item</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Server health check on port 3000</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>/v1/chat/completions endpoint test</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>/api/mission SSE streaming test</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>/mcp JSON-RPC tools test</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Extension compilation check</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>VSIX package & install</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Copilot Chat model picker — visible?</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Copilot Chat model picker — usable?</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>Diagnostic command run</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>Ustad → Custom Proxy change verified</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>chatLanguageModels.json cleaned</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>GitHub push — all updates pushed</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>Non-technical HTML doc created</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>Technical doc created</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>Audio script/generation</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>Low</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>Branding update with "At Home"</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>Medium</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <h2>🔄 পরিবর্তন লগ (Changelog)</h2>
+
+        <div class="card">
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Change</th>
+                    <th>File</th>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Ustad → Custom Proxy renamed</td>
+                    <td><code>server/z.js</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>chatLanguageModels.json Mission Barisal entry removed</td>
+                    <td><code>~/.config/Code/User/chatLanguageModels.json</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Diagnostic command added</td>
+                    <td><code>extension/src/extension.ts</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>onLanguageModelChat activation event added</td>
+                    <td><code>extension/package.json</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Branding & "At Home" attribution added</td>
+                    <td><code>server/z.js</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Case study document created</td>
+                    <td><code>server/doc/case-study/</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Non-technical + Technical docs created</td>
+                    <td><code>server/doc/non-technical/</code>, <code>server/doc/technical/</code></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <h2>🧪 কিভাবে টেস্ট করবেন</h2>
+
+        <div class="card">
+            <pre>
+# 1. সার্ভার চালু
+cd /home/sahon/Desktop/server && node z.js
+
+# 2. হেলথ চেক
+curl http://localhost:3000/health
+
+# 3. এজেন্ট লিস্ট
+curl http://localhost:3000/api/agents
+
+# 4. চ্যাট কমপ্লিশন
+curl -X POST http://localhost:3000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"mission","messages":[{"role":"user","content":"হ্যালো"}],"stream":false}'
+
+# 5. MCP টুল লিস্ট
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"1","method":"tools/list","params":{}}'
+
+# 6. VS Code Diagnostics
+# Ctrl+Shift+P → "Mission Barisal: Run Diagnostics"
+</pre>
+        </div>
+
+        <hr>
+        <div class="signature">
+            <p><strong>Sahon Srabon (ZombieCoder)</strong><br>
+                📍 Barisal, Bangladesh<br>
+                🐙 @zombiecoderbd<br>
+                🏠 At Home — Mission Barisal v3</p>
+        </div>
+
+    </div>
+</body>
+
+</html>

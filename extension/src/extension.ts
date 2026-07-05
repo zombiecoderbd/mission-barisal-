@@ -389,6 +389,47 @@ export function activate(context: vscode.ExtensionContext): void {
         );
       },
     ),
+    // --- Diagnostic: Test Provider Registration ---
+    vscode.commands.registerCommand(
+      "mission-barisal.diagnostics",
+      async () => {
+        const info: string[] = [];
+        info.push("🔍 Mission Barisal Diagnostics");
+        info.push("═══════════════════════════════");
+        info.push(`Server connected: ${manager?.isConnected() ? "✅" : "❌"}`);
+        info.push(`Server URL: ${manager?.getServerUrl() || "N/A"}`);
+        
+        // Check if LM provider API exists
+        try {
+          const hasAPI = typeof vscode.lm.registerLanguageModelChatProvider !== 'undefined';
+          info.push(`LM Provider API: ${hasAPI ? "✅" : "❌"}`);
+        } catch (e: any) {
+          info.push(`LM Provider API: ❌ (${e.message})`);
+        }
+        
+        // Try to send a test message
+        if (manager?.isConnected()) {
+          try {
+            const result = await manager.sendChatCompletions({
+              model: "mission",
+              messages: [{ role: "user", content: "ping" }],
+              stream: false,
+            });
+            const ok = result?.choices?.[0]?.message?.content ? "✅" : "❌";
+            info.push(`Server response: ${ok}`);
+          } catch (e: any) {
+            info.push(`Server response: ❌ (${e.message})`);
+          }
+        }
+        
+        const report = info.join("\n");
+        const doc = await vscode.workspace.openTextDocument({
+          content: report,
+          language: "markdown",
+        });
+        await vscode.window.showTextDocument(doc);
+      },
+    ),
   ];
 
   for (const cmd of commands) {

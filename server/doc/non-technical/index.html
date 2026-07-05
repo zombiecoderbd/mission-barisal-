@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>মিশন বরিশাল — সাধারণ মানুষের জন্য</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--accent:#22d3ee;--success:#22c55e;--warn:#f59e0b;--text:#e2e8f0;--muted:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;padding:1.5rem;}
+.container{max-width:900px;margin:0 auto;}
+h1{font-size:2.2rem;color:var(--accent);margin-bottom:.3rem;text-align:center;}
+.subtitle{text-align:center;color:var(--muted);font-size:1.1rem;margin-bottom:2rem;}
+h2{font-size:1.6rem;color:#f8fafc;margin:2.5rem 0 1rem;padding-bottom:.4rem;border-bottom:2px solid var(--accent);}
+h3{font-size:1.2rem;color:var(--accent);margin:1.8rem 0 .8rem;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin:1rem 0;}
+.intro-card{background:linear-gradient(135deg,#1e293b,#0f172a);border:2px solid var(--accent);border-radius:16px;padding:2rem;margin:1.5rem 0;text-align:center;}
+.intro-card p{font-size:1.1rem;line-height:1.9;}
+.story{background:rgba(34,211,238,.05);border-left:4px solid var(--accent);border-radius:8px;padding:1.2rem;margin:1rem 0;font-style:italic;}
+.story::before{content:"📖 ";font-style:normal;}
+code{background:rgba(255,255,255,.08);padding:.15rem .4rem;border-radius:4px;font-size:.88em;}
+.diagram{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin:1rem 0;text-align:center;overflow-x:auto;}
+.diagram pre{text-align:left;display:inline-block;font-size:.85rem;line-height:1.4;color:var(--accent);}
+.emoji-big{font-size:3rem;display:block;text-align:center;margin:1rem 0;}
+.signature{text-align:center;margin-top:3rem;padding-top:1.5rem;border-top:2px solid var(--accent);color:var(--muted);}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.95rem;}
+th,td{padding:.5rem .7rem;border:1px solid var(--border);text-align:left;}
+th{background:rgba(34,211,238,.1);color:var(--accent);}
+.btn{display:inline-block;background:var(--accent);color:#0f172a;padding:.6rem 1.4rem;border-radius:8px;font-weight:600;text-decoration:none;margin:.5rem 0;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🧟 মিশন বরিশাল</h1>
+<p class="subtitle">ছয় বন্ধু, একটি লক্ষ্য — আপনার প্রশ্নের উত্তর খুঁজে বের করা</p>
+
+<!-- ═══ INTRODUCTION ═══ -->
+<div class="intro-card">
+<p>🤔 আপনি কি কখনও ভেবেছেন, <strong>"একটা প্রশ্নের উত্তর যদি ৬জন বিশেষজ্ঞ মিলে আলোচনা করে দিতো, তাহলে কত ভালো হতো?"</strong></p>
+<p style="margin-top:.8rem">ঠিক এই কাজটাই করে <strong>মিশন বরিশাল</strong>।</p>
+</div>
+
+<!-- ═══ STORY 1 ═══ -->
+<h2>🎯 একটা গল্প দিয়ে শুরু করা যাক</h2>
+
+<div class="story">
+<p><strong>রহিম সাহেবের গল্প:</strong> রহিম সাহেব একজন স্কুল টিচার। তিনি তার ছাত্রদের জন্য একটা ওয়েবসাইট বানাতে চান। কিন্তু তিনি প্রোগ্রামিং জানেন না।</p>
+<p>তিনি মিশন বরিশালকে বলেন: <em>"আমার ছাত্রদের জন্য একটা গণিত শেখার ওয়েবসাইট চাই!"</em></p>
+<p>মিশন বরিশাল তখন তার <strong>৬ বন্ধু</strong>কে ডাকে। প্রত্যেকে নিজ নিজ দক্ষতা দিয়ে কাজ করে। অবশেষে তারা একসাথে একটি চমৎকার ওয়েবসাইট তৈরি করে ফেলে।</p>
+<p>রহিম সাহেব খুশি! 👨‍🏫</p>
+</div>
+
+<!-- ═══ DIAGRAM ═══ -->
+<h2>🔬 কিভাবে কাজ করে?</h2>
+
+<p>নিচের ডায়াগ্রামটা দেখুন। এটা খুবই সহজ!</p>
+
+<div class="diagram">
+<pre>
+                    আপনার প্রশ্ন
+                        │
+                        ▼
+           ┌─────────────────────────┐
+           │    মিশন বরিশাল সার্ভার  │
+           │    (একটি ছোট প্রোগ্রাম)  │
+           └─────────┬───────────────┘
+                     │
+          ┌──────────┼──────────┐
+          ▼          ▼          ▼
+   ┌──────────┐ ┌──────────┐ ┌──────────┐
+   │ 🔴 মনু   │ │ 🔵 জারিন│ │ 🟢 বৃষ্টি│
+   │ আর্কিটেক্ট│ │ ডিবাগার  │ │ সিকিউরিটি│
+   └──────────┘ └──────────┘ └──────────┘
+   ┌──────────┐ ┌──────────┐ ┌──────────┐
+   │ 🟡 রাশেদ │ │ 📖 হালিম│ │ ⚫ মজনু │
+   │ পারফরম্যান্স│ │ ডকুমেন্টেশন│ │ কোয়ালিটি│
+   └──────────┘ └──────────┘ └──────────┘
+          │          │          │
+          └──────────┼──────────┘
+                     │
+                     ▼
+           ┌─────────────────────────┐
+           │ ✅ একমত উত্তর          │
+           │ (৬ বন্ধু মিলে দিয়েছে)  │
+           └─────────────────────────┘
+</pre>
+</div>
+
+<!-- ═══ STORY 2 ═══ -->
+<h2>🏘️ বাস্তব জীবনের আরেকটি উদাহরণ</h2>
+
+<div class="story">
+<p><strong>ফাতিমা আপার গল্প:</strong> ফাতিমা আপা একটি ছোট দোকান চালান। তার দোকানের জন্য একটা সহজ হিসাব রাখার সিস্টেম দরকার।</p>
+<p>তিনি বলেন: <em>"আমার দোকানের বিক্রি আর লাভ হিসাব রাখার একটা ব্যবস্থা চাই!"</em></p>
+<p>মিশন বরিশালের ৬ বন্ধু:</p>
+<ul>
+<li>👷 <strong>মনু</strong> প্রথমে সিস্টেম ডিজাইন করে</li>
+<li>🐛 <strong>জারিন</strong> চেক করে কোনো ভুল আছে কিনা</li>
+<li>🛡️ <strong>বৃষ্টি</strong> নিশ্চিত করে ডাটা নিরাপদ থাকবে</li>
+<li>⚡ <strong>রাশেদ</strong> সিস্টেমকে দ্রুত করে তোলে</li>
+<li>📖 <strong>হালিম</strong> ব্যবহারের নিয়ম লিখে দেয়</li>
+<li>🔍 <strong>মজনু</strong> শেষে পুরো জিনিসটা যাচাই করে</li>
+</ul>
+<p>ফলাফল: ফাতিমা আপা এখন輕鬆で তার দোকানের হিসাব রাখতে পারেন! 👩‍💼</p>
+</div>
+
+<!-- ═══ WHAT IS THIS ═══ -->
+<h2>🤷 "মিশন বরিশাল" আসলে কী?</h2>
+
+<div class="card">
+<p>মিশন বরিশাল হলো <strong>৬টি কৃত্রিম বুদ্ধিমত্তা (AI) বন্ধুর একটি দল</strong>। প্রতিটি বন্ধু একটি নির্দিষ্ট বিষয়ে বিশেষজ্ঞ:</p>
+
+<table>
+<tr><th>বন্ধু</th><th>নাম</th><th>সে কী করতে পারে?</th></tr>
+<tr><td style="text-align:center">🔴</td><td><strong>কোড গুরু - মনু</strong></td><td>যেকোনো প্রজেক্টের আর্কিটেকচার ও ডিজাইন</td></tr>
+<tr><td style="text-align:center">🔵</td><td><strong>বাগ হান্টার - জারিন</strong></td><td>প্রোগ্রামের ভুল খুঁজে বের করা</td></tr>
+<tr><td style="text-align:center">🟢</td><td><strong>সিকিউরিটি হিরো - বৃষ্টি</strong></td><td>নিরাপত্তা নিশ্চিত করা</td></tr>
+<tr><td style="text-align:center">🟡</td><td><strong>পারফরম্যান্স উইজার্ড - রাশেদ</strong></td><td>সবকিছু দ্রুত করা</td></tr>
+<tr><td style="text-align:center">📖</td><td><strong>ডকুমেন্টেশন রাজা - হালিম</strong></td><td>ডকুমেন্টেশন ও ব্যবহার নির্দেশিকা</td></tr>
+<tr><td style="text-align:center">⚫</td><td><strong>কোয়ালিটি তস্কর - মজনু</strong></td><td>সবকিছু ঠিক আছে কিনা যাচাই</td></tr>
+</table>
+</div>
+
+<!-- ═══ HOW TO USE ═══ -->
+<h2>💻 কিভাবে ব্যবহার করবেন?</h2>
+
+<div class="card">
+<div class="emoji-big">🖥️ → 🌐 → 🤖</div>
+<ol>
+<li><strong>একটি কম্পিউটার দরকার</strong> — যেকোনো কম্পিউটার (Windows, Mac, Linux)</li>
+<li><strong>সার্ভার চালু করুন</strong> — একটা ছোট প্রোগ্রাম চালু করলেই হয়</li>
+<li><strong>প্রশ্ন করুন</strong> — আপনার ইচ্ছেমতো প্রশ্ন করতে পারেন</li>
+<li><strong>উত্তর পান</strong> — ৬ বন্ধু মিলে উত্তর তৈরি করে দেবে</li>
+</ol>
+</div>
+
+<!-- ═══ WHERE TO USE ═══ -->
+<h2>📍 কোথায় ব্যবহার করা যায়?</h2>
+
+<div class="card">
+<table>
+<tr><th>জায়গা</th><th>কাজ</th></tr>
+<tr><td>🏫 স্কুল-কলেজ</td><td>ছাত্রদের পড়ানোর জন্য ওয়েবসাইট বানানো</td></tr>
+<tr><td>🏪 ছোট দোকান</td><td>হিসাব রাখার সফটওয়্যার বানানো</td></tr>
+<tr><td>🏢 অফিস</td><td>অফিসের কাজের জন্য টুলস বানানো</td></tr>
+<tr><td>🏠 বাসা</td><td>নিজের প্রজেক্ট বা আইডিয়া বাস্তবায়ন</td></tr>
+<tr><td>🧪 গবেষণা</td><td>নতুন আইডিয়া টেস্ট করা</td></tr>
+</table>
+</div>
+
+<!-- ═══ TECHNICAL SIMPLIFIED ═══ -->
+<h2>🔧 একটু টেকনিক্যালি বললে</h2>
+
+<div class="card">
+<p>মিশন বরিশাল মূলত একটি <strong>Node.js সার্ভার</strong> (একটা ছোট প্রোগ্রাম)। এটা আপনার কম্পিউটারে চলে এবং বিভিন্ন AI মডেলের সাথে কথা বলে।</p>
+<div class="diagram">
+<pre>
+  আপনার কম্পিউটার
+  ┌─────────────────────────────────┐
+  │  📦 মিশন বরিশাল সার্ভার         │
+  │  ┌───────────────────────────┐  │
+  │  │ 👷 মনু → 🐛 জারিন → 🛡️ বৃষ্টি│  │
+  │  │ ⚡ রাশেদ → 📖 হালিম → ⚫ মজনু│  │
+  │  └───────────────────────────┘  │
+  │         │                       │
+  │         ▼                       │
+  │  ┌───────────────────────────┐  │
+  │  │ 🌐 AI প্রোভাইডার          │  │
+  │  │ OpenCode, Groq, Gemini    │  │
+  │  └───────────────────────────┘  │
+  └─────────────────────────────────┘
+</pre>
+</div>
+</div>
+
+<!-- ═══ FAQ ═══ -->
+<h2>❓ প্রায়শই জিজ্ঞাসিত প্রশ্ন</h2>
+
+<div class="card">
+<p><strong>প্রশ্ন:</strong> আমার কি প্রোগ্রামিং জানতে হবে?</p>
+<p><strong>উত্তর:</strong> না! আপনি সাধারণ ইংরেজি বা বাংলায় প্রশ্ন করতে পারেন। ৬ বন্ধু সব বুঝে নেয়। 😊</p>
+</div>
+
+<div class="card">
+<p><strong>প্রশ্ন:</strong> এটা কি বিনামূল্যে?</p>
+<p><strong>উত্তর:</strong> হ্যাঁ, বর্তমানে সম্পূর্ণ বিনামূল্যে। শুধু আপনার কম্পিউটার আর ইন্টারনেট সংযোগ দরকার।</p>
+</div>
+
+<div class="card">
+<p><strong>প্রশ্ন:</strong> আমি কি আমার অফিসের কাজে ব্যবহার করতে পারি?</p>
+<p><strong>উত্তর:</strong> অবশ্যই! এটা যেকোনো কাজের জন্যই ব্যবহার করা যায়।</p>
+</div>
+
+<div class="card">
+<p><strong>প্রশ্ন:</strong> এটা কি নিরাপদ?</p>
+<p><strong>উত্তর:</strong> হ্যাঁ। আপনার ডাটা আপনার কম্পিউটারেই থাকে। আমরা আপনার কোনো তথ্য সংরক্ষণ করি না।</p>
+</div>
+
+<!-- ═══ SIGNATURE ═══ -->
+<div class="signature">
+<p>🧟 <strong>মিশন বরিশাল</strong> — সাধারণ মানুষকে প্রযুক্তির শক্তি দেওয়ার একটি ছোট চেষ্টা</p>
+<p style="margin-top:.5rem">
+<strong>Sahon Srabon (ZombieCoder)</strong><br>
+📍 Barisal, Bangladesh<br>
+🐙 @zombiecoderbd &nbsp;|&nbsp; 🏠 At Home
+</p>
+<p style="margin-top:.8rem;font-size:.85rem;color:var(--muted);">
+"প্রযুক্তি সবার জন্য — Technology For Everyone"</p>
+</div>
+
+</div>
+</body>
+</html>

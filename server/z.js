@@ -2,7 +2,7 @@
 // =============================================================================
 // Mission Barisal v3 — Pure API Server
 // Zero dependency · Agent Masking · MCP · Intent Verify
-// Owner: Sahon Srabon · Developer Zone · Dhaka, Bangladesh
+// Owner: Sahon Srabon (ZombieCoder) · Barisal, Bangladesh · At Home
 // =============================================================================
 
 // ─── Core Modules (zero external dependencies) ────────────────
@@ -95,7 +95,7 @@ const SYSTEM_IDENTITY = {
       owner: "Sahon Srabon",
       organization: "Developer Zone",
       address: "235 South Pirarbag, Amtala Bazar, Mirpur - 60 feet",
-      location: "Dhaka, Bangladesh",
+      location: "Barisal, Bangladesh",
       contact: {
         phone: "+880 1323-626282",
         email: "infi@zombiecoder.my.id",
@@ -298,11 +298,14 @@ const PROVIDER_CONFIG = {
       { name: "model-pickle", apiModel: "big-pickle" },
     ],
   },
-  ustad: {
-    name: "Ustad",
-    baseUrl:
-      process.env.USTAD_BASE || "https://ustad.bestresponsiblesecurity.com/v1",
-    key: process.env.USTAD_API_KEY || "",
+  // ── Custom Proxy (was: "Ustad") ───────────────────────────
+  // পরিবর্তন: Ustad → Custom Proxy (জুলাই ২০২৬)
+  // কারণ: ইউজার-নিয়ন্ত্রিত প্রক্সির মাধ্যমে মডেল এক্সেস
+  // CUSTOM_PROXY_BASE env var সেট করে কাস্টমাইজ করা যাবে
+  custom_proxy: {
+    name: "Custom Proxy",
+    baseUrl: process.env.CUSTOM_PROXY_BASE || "http://localhost:8080/v1",
+    key: process.env.CUSTOM_PROXY_API_KEY || "",
     priority: 2,
     type: "openai",
     models: [
@@ -606,7 +609,7 @@ function generateSSOT(rootDir, projectInfo) {
   const footer = `
 ## Mission Barisal Context
 - **Server:** Mission Barisal v3 — Multi-Agent Code Platform
-- **Owner:** Sahon Srabon · Developer Zone · Dhaka, Bangladesh
+- **Owner:** Sahon Srabon (ZombieCoder) · Barisal, Bangladesh · At Home
 - **Agents:** 8 specialist agents (architecture, debugging, security, performance, documentation, QA, frontend, truth-checker)
 - **MCP Endpoint:** \`/mcp\` on port ${PORT}
 
