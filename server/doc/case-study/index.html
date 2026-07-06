@@ -202,7 +202,7 @@
         <div class="meta">
             <strong>ভাষা:</strong> বাংলা (Bangla) &nbsp;|&nbsp;
             <strong>সংস্করণ:</strong> 3.0.0 &nbsp;|&nbsp;
-            <strong>তারিখ:</strong> জুলাই ২০২৬ &nbsp;|&nbsp;
+            <strong>তারিখ:</strong> ৭ জুলাই ২০২৬ &nbsp;|&nbsp;
             <strong>লেখক:</strong> Sahon Srabon (ZombieCoder)
         </div>
 
@@ -471,13 +471,28 @@
 
         <div class="card">
             <h3><span class="badge badge-pending">PENDING</span> Issue 6: Audio File Size</h3>
-            <p><strong>সমস্যা:</strong> doc/ ফোল্ডারে MP3 ফাইলগুলো (২-৩ MB) গিট রিপোজিটরিতে push করা হয়নি (.gitignore-এ
-                *.mp3 excluded)।</p>
-            <p><strong>চেক করতে হবে:</strong></p>
+            <p><strong>সমস্যা:</strong> doc/ ফোল্ডারে MP3 ফাইলগুলো (২-৩ MB) .gitignore-এ *.mp3 excluded থাকায়
+                normal git add-এ যোগ হয় না।</p>
+            <p><strong>বর্তমান অবস্থা:</strong> <code>git add -f</code> ব্যবহার করে force-add করা হয়েছে এবং GitHub-এ
+                push করা সফল। মোট ৭টি MP3 ফাইল (২ MB full version সহ) পুশ করা হয়েছে।</p>
+            <p><strong>সতর্কতা:</strong> পরবর্তী commit-এ MP3 ফাইলগুলো ignore হবে যদি আবার force add না করা হয়।</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="badge badge-pending">PENDING</span> Issue 7: Agent Image (JPG/PNG) Reading</h3>
+            <p><strong>সমস্যা:</strong> এজেন্টরা JPG, PNG, GIF ইত্যাদি ইমেজ ফরমেট পড়তে পারেনা। শুধুমাত্র টেক্সট ফাইল
+                পড়তে পারে।</p>
+            <p><strong>কারণ:</strong> বর্তমান MCP টুলস শুধুমাত্র টেক্সট ফাইল রিড করে (<code>read_file</code>)। ইমেজ
+                প্রসেসিং এর জন্য আলাদা টুল বা OCR সাপোর্ট লাগবে।</p>
+            <p><strong>সম্ভাব্য সমাধান:</strong></p>
             <ul>
-                <li>Git LFS ব্যবহার করে MP3 ফাইলগুলো ট্র্যাক করা যাবে কিনা</li>
-                <li>অথবা YouTube/SoundCloud-এ আপলোড করে লিংক দিন</li>
+                <li>MCP-তে নতুন <code>read_image</code> টুল যোগ করা (base64 এনকোড করে)</li>
+                <li>অথবা vision-capable মডেল ব্যবহার করা (GPT-4 Vision, Gemini Vision)</li>
+                <li>OCR পাইপলাইন যোগ করা (Tesseract ইত্যাদি)</li>
+                <li>লো-প্রায়োরিটি — বর্তমানে টেক্সট-ভিত্তিক কাজই প্রধান ফোকাস</li>
             </ul>
+            <p><strong>বর্তমান অবস্থা:</strong> গবেষণাধীন — টেক্সট এজেন্টদের জন্য ইমেজ রিডিং নেটিভভাবে সম্ভব নয়।
+                Vision মডেল বা OCR টুল লাগবে।</p>
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -559,33 +574,51 @@
                 </tr>
                 <tr>
                     <td>12</td>
-                    <td>GitHub push — all updates pushed</td>
-                    <td class="status-warn">⏳ Pending</td>
+                    <td>README.md branding updated</td>
+                    <td class="status-ok">✅ Done</td>
                     <td>High</td>
                 </tr>
                 <tr>
                     <td>13</td>
                     <td>Non-technical HTML doc created</td>
-                    <td class="status-warn">⏳ Pending</td>
+                    <td class="status-ok">✅ Done</td>
                     <td>Medium</td>
                 </tr>
                 <tr>
                     <td>14</td>
                     <td>Technical doc created</td>
-                    <td class="status-warn">⏳ Pending</td>
+                    <td class="status-ok">✅ Done</td>
                     <td>Medium</td>
                 </tr>
                 <tr>
                     <td>15</td>
-                    <td>Audio script/generation</td>
-                    <td class="status-warn">⏳ Pending</td>
+                    <td>Audio script + MP3 generation</td>
+                    <td class="status-ok">✅ Done</td>
                     <td>Low</td>
                 </tr>
                 <tr>
                     <td>16</td>
-                    <td>Branding update with "At Home"</td>
-                    <td class="status-warn">⏳ Pending</td>
+                    <td>Branding update with "At Home" (z.js + README)</td>
+                    <td class="status-ok">✅ Done</td>
                     <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td>GitHub push — server + extension + doc + audio</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td>Credits HTML (exam/Credits/index.html) created</td>
+                    <td class="status-ok">✅ Done</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td>Agent image (JPG/PNG) reading support — research</td>
+                    <td class="status-warn">⏳ Pending</td>
+                    <td>Low</td>
                 </tr>
             </table>
         </div>
@@ -622,18 +655,43 @@
                 </tr>
                 <tr>
                     <td>Jul 6, 2026</td>
-                    <td>Branding & "At Home" attribution added</td>
-                    <td><code>server/z.js</code></td>
+                    <td>Branding & "At Home" attribution added (z.js + README)</td>
+                    <td><code>server/z.js</code>, <code>README.md</code></td>
                 </tr>
                 <tr>
                     <td>Jul 6, 2026</td>
-                    <td>Case study document created</td>
+                    <td>Case study document created (initial)</td>
                     <td><code>server/doc/case-study/</code></td>
                 </tr>
                 <tr>
                     <td>Jul 6, 2026</td>
                     <td>Non-technical + Technical docs created</td>
                     <td><code>server/doc/non-technical/</code>, <code>server/doc/technical/</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Audio MP3 generated (7 files, Microsoft TTS)</td>
+                    <td><code>server/doc/audio/</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>README.md branding updated (ustad→custom_proxy, Barisal, At Home)</td>
+                    <td><code>README.md</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>GitHub push — all server, extension, doc, audio files</td>
+                    <td><code>GitHub: zombiecoderbd/mission-barisal-</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Credits HTML created (exam/Credits/) — 6 providers, 6 agents, family, human truth</td>
+                    <td><code>exam/Credits/index.html</code></td>
+                </tr>
+                <tr>
+                    <td>Jul 6, 2026</td>
+                    <td>Case study updated — checklist refreshed, new issues added, changelog extended</td>
+                    <td><code>server/doc/case-study/</code></td>
                 </tr>
             </table>
         </div>
