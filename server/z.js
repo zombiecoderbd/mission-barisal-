@@ -386,9 +386,14 @@ function resolveProvider(model, exactOnly) {
   for (const [id, p] of Object.entries(PROVIDER_CONFIG)) {
     for (const m of p.models) {
       allNames.set(getModelName(m), { providerId: id, config: p });
+      // Also index by apiModel so both masked and unmasked names work
+      const apiName = getApiModelName(m);
+      if (apiName !== getModelName(m)) {
+        allNames.set(apiName, { providerId: id, config: p });
+      }
     }
   }
-  // 1. Exact match — public model name
+  // 1. Exact match — public model name or apiModel name
   if (allNames.has(model)) {
     return { ...allNames.get(model), matchType: "exact" };
   }
@@ -917,7 +922,7 @@ const DEFAULT_AGENTS = [
   {
     id: "code-guru",
     name: "কোড গুরু - মনু",
-    model: getDefaultModel(),
+    model: "model-pro",
     role: "architecture",
     expertise: "code review, refactoring, best practices, system design",
     priority: 1,
@@ -925,7 +930,7 @@ const DEFAULT_AGENTS = [
   {
     id: "bug-hunter",
     name: "বাগ হান্টার - জারিন",
-    model: getDefaultModel(),
+    model: "model-ultra",
     role: "debugging",
     expertise: "bug detection, error analysis, debugging, root cause analysis",
     priority: 2,
@@ -933,7 +938,7 @@ const DEFAULT_AGENTS = [
   {
     id: "security-hero",
     name: "সিকিউরিটি হিরো - বৃষ্টি",
-    model: getDefaultModel(),
+    model: "model-pickle",
     role: "security",
     expertise: "security audit, vulnerability detection, secure coding, OWASP",
     priority: 3,
@@ -943,7 +948,7 @@ const DEFAULT_AGENTS = [
   {
     id: "perf-wizard",
     name: "পারফরম্যান্স উইজার্ড - রাশেদ",
-    model: getDefaultModel(),
+    model: "model-ultra",
     role: "performance",
     expertise: "performance optimization, caching, database tuning, profiling",
     priority: 4,
@@ -953,7 +958,7 @@ const DEFAULT_AGENTS = [
   {
     id: "doc-king",
     name: "ডকুমেন্টেশন রাজা - হালিম",
-    model: getDefaultModel(),
+    model: "model-pickle",
     role: "documentation",
     expertise: "API documentation, code comments, README, technical writing",
     priority: 5,
@@ -963,7 +968,7 @@ const DEFAULT_AGENTS = [
   {
     id: "qa-tyrant",
     name: "কোয়ালিটি তস্কর - মজনু",
-    model: getDefaultModel(),
+    model: "model-pro",
     role: "quality",
     expertise:
       "testing, test coverage, code quality, edge cases, QA automation",
@@ -4654,28 +4659,36 @@ function handleMCP(req, res) {
         protocol: params?.protocolVersion || "unknown",
         id: id?.toString().slice(0, 8),
       });
-      if (clientName !== "unknown") {
-        const now = new Date().toISOString();
-        const clientData = {
-          name: clientName,
-          version: clientVersion,
-          protocolVersion: params?.protocolVersion || "unknown",
-          connected_at: now,
-          last_seen: now,
-          status: "active",
-          working_dir: mcpWorkingDir || "",
-          session_id: id?.toString().slice(0, 8) || "",
-          tools_used: 0,
-        };
-        mcpClients.set(clientName, clientData);
-        saveClient(clientData);
-        log("INFO", "MCP_CLIENT_CONNECTED", {
-          message:
-            "Client '" +
-            clientName +
-            "' connected. AUTO-SSOT: Use set_working_dir to tell me your project directory. Example: set_working_dir { directory: '/path/to/your/project' }",
-        });
-      }
+      // Always track clients — anonymous gets generated name
+      const effectiveName =
+        clientName !== "unknown"
+          ? clientName
+          : "anonymous-" +
+            (id?.toString().slice(0, 6) ||
+              Math.random().toString(36).slice(2, 8));
+      const now = new Date().toISOString();
+      const clientData = {
+        name: effectiveName,
+        version: clientVersion,
+        protocolVersion: params?.protocolVersion || "unknown",
+        connected_at: now,
+        last_seen: now,
+        status: "active",
+        working_dir: mcpWorkingDir || "",
+        session_id: id?.toString().slice(0, 8) || "",
+        tools_used: 0,
+        anonymous: clientName === "unknown",
+      };
+      mcpClients.set(effectiveName, clientData);
+      saveClient(clientData);
+      log("INFO", "MCP_CLIENT_CONNECTED", {
+        name: effectiveName,
+        anonymous: clientName === "unknown",
+        message:
+          "Client '" +
+          effectiveName +
+          "' connected. Use set_working_dir to set your project directory.",
+      });
 
       // Auto SSOT if zombieBridge sends client directory via header
       let autoSootDir = clientDirFromHeader || "";

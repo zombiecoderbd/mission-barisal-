@@ -37,7 +37,7 @@
 ## agent: security-hero
 
 - **name**: 🟢 সিকিউরিটি হিরো - বৃষ্টি
-- **model**: deepseek-v4-flash-free
+- **model**: big-pickle
 - **role**: security
 - **expertise**: সিকিউরিটি অডিট, ভালনারেবিলিটি, ডেটা প্রোটেকশন, 🕸️ ওয়েব থ্রেট সার্চ
 - **priority**: 3
@@ -53,7 +53,7 @@
 ## agent: perf-wizard
 
 - **name**: 🟡 পারফরম্যান্স উইজার্ড - রাশেদ
-- **model**: deepseek-v4-flash-free
+- **model**: mimo-v2.5-free
 - **role**: performance
 - **expertise**: পারফরম্যান্স অপটিমাইজেশন, মেমরি ম্যানেজমেন্ট, ক্যাশিং, 📊 বেঞ্চমার্ক রিসার্চ
 - **priority**: 4
