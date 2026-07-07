@@ -1286,6 +1286,7 @@ async function pushDone(stats) {
 //  💾 SESSION & MEMORY SYSTEM (Optimized)
 // ══════════════════════════════════════════════════════════════
 const SESSIONS_FILE = path.join(DATA_DIR, "sessions.json");
+const CLIENTS_FILE = path.join(DATA_DIR, "clients.json");
 const activeSessions = new Map(); // in-memory cache
 const memoryBuffer = new Map(); // filePath → entry[] (batch write buffer)
 const sessionBuffer = new Map(); // sessionId → data (batch update buffer)
@@ -1374,6 +1375,52 @@ function flushAllSessions() {
     }
   }
   sessionBuffer.clear();
+}
+
+// ─── CLIENT LIST PERSISTENCE ─────────────────────────────
+function readClients() {
+  if (!fs.existsSync(CLIENTS_FILE)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(CLIENTS_FILE, "utf8")) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function writeClients(clients) {
+  try {
+    fs.writeFileSync(CLIENTS_FILE, JSON.stringify(clients, null, 2));
+    // Also sync in-memory mcpClients Map
+    mcpClients.clear();
+    for (const c of clients) {
+      mcpClients.set(c.name, c);
+    }
+  } catch (e) {
+    log("ERROR", "WRITE_CLIENTS_FAILED", { error: e.message });
+  }
+}
+
+function saveClient(clientData) {
+  const clients = readClients();
+  const idx = clients.findIndex((c) => c.name === clientData.name);
+  if (idx >= 0) {
+    clients[idx] = { ...clients[idx], ...clientData };
+  } else {
+    clients.push(clientData);
+  }
+  writeClients(clients);
+}
+
+function updateClientHeartbeat(clientName) {
+  if (clientName && clientName !== "unknown") {
+    const clients = readClients();
+    const idx = clients.findIndex((c) => c.name === clientName);
+    if (idx >= 0) {
+      clients[idx].last_seen = new Date().toISOString();
+      clients[idx].status = "active";
+      writeClients(clients);
+    }
+  }
 }
 
 // Per-agent per-session memory (buffered — batch flush reduces disk I/O)
@@ -4608,12 +4655,20 @@ function handleMCP(req, res) {
         id: id?.toString().slice(0, 8),
       });
       if (clientName !== "unknown") {
-        mcpClients.set(clientName, {
+        const now = new Date().toISOString();
+        const clientData = {
           name: clientName,
           version: clientVersion,
           protocolVersion: params?.protocolVersion || "unknown",
-          connected_at: new Date().toISOString(),
-        });
+          connected_at: now,
+          last_seen: now,
+          status: "active",
+          working_dir: mcpWorkingDir || "",
+          session_id: id?.toString().slice(0, 8) || "",
+          tools_used: 0,
+        };
+        mcpClients.set(clientName, clientData);
+        saveClient(clientData);
         log("INFO", "MCP_CLIENT_CONNECTED", {
           message:
             "Client '" +
@@ -4744,6 +4799,15 @@ function handleMCP(req, res) {
     }
 
     if (method === "ping") {
+      // Heartbeat — update client last_seen if client info available
+      const pingClient = params?.clientName || clientNameFromHeader || "";
+      if (pingClient && pingClient !== "unknown") {
+        updateClientHeartbeat(pingClient);
+        log("INFO", "HEARTBEAT", {
+          client: pingClient,
+          at: new Date().toISOString(),
+        });
+      }
       jsonResponse(res, 200, { jsonrpc: "2.0", id, result: {} });
       log("INFO", "REQUEST", {
         method: "POST",
@@ -5023,6 +5087,155 @@ const server = http.createServer(async (req, res) => {
         elapsed: Date.now() - startTime,
       });
       jsonResponse(res, 200, mcpStatus);
+      return;
+    }
+
+    // ─── GET /api/clients ─────────────────────────────────────
+    // HTML page showing all connected clients with their sessions and status
+    if (url === "/api/clients" && method === "GET") {
+      log("INFO", "REQUEST", {
+        method,
+        url,
+        status: 200,
+        elapsed: Date.now() - startTime,
+      });
+
+      const allClients = readClients();
+      const clients = allClients.sort(
+        (a, b) => new Date(b.last_seen) - new Date(a.last_seen),
+      );
+
+      let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Barisal — Client List</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0d1117; color: #e6edf3; min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  h1 {
+    font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #58a6ff, #3fb950);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 2rem; }
+  .stats-bar {
+    display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;
+  }
+  .stat-card {
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 1rem 1.5rem; flex: 1; min-width: 150px;
+  }
+  .stat-card .label { font-size: 0.875rem; color: #8b949e; }
+  .stat-card .value { font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem; }
+  .stat-card .value.green { color: #3fb950; }
+  .stat-card .value.blue { color: #58a6ff; }
+  .stat-card .value.orange { color: #d29922; }
+  table {
+    width: 100%; border-collapse: collapse; background: #161b22;
+    border: 1px solid #30363d; border-radius: 8px; overflow: hidden;
+  }
+  th {
+    background: #1c2128; text-align: left; padding: 0.75rem 1rem;
+    font-size: 0.875rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  td { padding: 0.75rem 1rem; border-top: 1px solid #21262d; font-size: 0.9rem; }
+  tr:hover { background: #1c2128; }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 0.375rem;
+    padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500;
+  }
+  .status-badge.active { background: #0b2e1a; color: #3fb950; border: 1px solid #1b4622; }
+  .status-badge.stale { background: #2d1a0b; color: #d29922; border: 1px solid #462b1b; }
+  .status-badge.offline { background: #2d0b0b; color: #f85149; border: 1px solid #461b1b; }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+  }
+  .dot.active { background: #3fb950; }
+  .dot.stale { background: #d29922; }
+  .dot.offline { background: #f85149; }
+  .refresh-btn {
+    display: inline-block; padding: 0.5rem 1.5rem; margin-top: 1rem;
+    background: #238636; color: #fff; border: none; border-radius: 6px;
+    font-size: 0.9rem; cursor: pointer; text-decoration: none;
+  }
+  .refresh-btn:hover { background: #2ea043; }
+  .footer { margin-top: 2rem; color: #484f58; font-size: 0.8rem; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🤖 MCP Client List</h1>
+  <p class="subtitle">Real-time view of all connected MCP clients</p>
+
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="label">Total Clients</div>
+      <div class="value blue">${clients.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Active Now</div>
+      <div class="value green">${clients.filter((c) => c.status === "active").length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Working Directory</div>
+      <div class="value orange" style="font-size:1rem;word-break:break-all;">${mcpWorkingDir || "Not set"}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Server Port</div>
+      <div class="value">${PORT}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Client Name</th>
+        <th>Version</th>
+        <th>Status</th>
+        <th>Connected</th>
+        <th>Last Seen</th>
+        <th>Working Dir</th>
+        <th>Session</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${clients
+        .map((c) => {
+          const now = Date.now();
+          const lastSeen = new Date(c.last_seen).getTime();
+          const diff = now - lastSeen;
+          let status = "active";
+          if (diff > 300000) status = "stale";
+          if (diff > 1800000) status = "offline";
+          return `<tr>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.version || "—"}</td>
+          <td><span class="status-badge ${status}"><span class="dot ${status}"></span>${status}</span></td>
+          <td>${new Date(c.connected_at).toLocaleString()}</td>
+          <td>${new Date(c.last_seen).toLocaleString()}</td>
+          <td style="font-size:0.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.working_dir || "—"}</td>
+          <td style="font-family:monospace;font-size:0.8rem;">${c.session_id || "—"}</td>
+        </tr>`;
+        })
+        .join("")}
+    </tbody>
+  </table>
+
+  <a href="/api/clients" class="refresh-btn">🔄 Refresh</a>
+</div>
+<div class="footer">
+  Mission Barisal v3 &mdash; Connected to port ${PORT}
+</div>
+</body>
+</html>`;
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+      res.end(html);
       return;
     }
 
@@ -6300,7 +6513,8 @@ async function init() {
     console.log(
       "  POST /api/v1/anti-dote   — Anti-Dote Type Safety (6-step chain)",
     );
-    console.log("  POST /api/mcp-clients    — Connected MCP clients");
+    console.log("  POST /api/mcp-clients    — Connected MCP clients (JSON)");
+    console.log("  GET  /api/clients         — Connected MCP clients (HTML)");
     console.log(
       "  POST /api/set-working-dir — Set working dir (for zombieBridge)",
     );
